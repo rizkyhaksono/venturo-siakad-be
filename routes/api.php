@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\SiteController;
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+
+// Admin Controllers
+use App\Http\Controllers\Api\v1\Admin\AuthController;
+use App\Http\Controllers\Api\v1\Admin\ClassesController;
+use App\Http\Controllers\Api\v1\Admin\UserRoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,26 +18,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->group(function () {
-    Route::get('/', [SiteController::class, 'index']);
-
-    Route::post('/auth/login', [AuthController::class, 'login']); //->middleware(['signature']);
-    Route::post('/auth/logout', [AuthController::class, 'logout']); //->middleware(['signature']);
-    Route::get('/auth/profile', [AuthController::class, 'profile'])->middleware(['auth.api']);
-
-    Route::get('/users', [UserController::class, 'index']); //->middleware(['auth.api', 'role:user.view']);
-    Route::get('/users/{id}', [UserController::class, 'show']); //->middleware(['auth.api', 'role:user.view']);
-    Route::post('/users', [UserController::class, 'store']); //->middleware(['auth.api', 'role:user.create|roles.view']);
-    Route::put('/users/{id}', [UserController::class, 'update']); //->middleware(['auth.api', 'role:user.update||roles.view']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']); //->middleware(['auth.api', 'role:user.delete']);
-
-    Route::get('/roles', [RoleController::class, 'index']); //->middleware(['auth.api', 'role:roles.view']);
-    Route::get('/roles/{id}', [RoleController::class, 'show']); //->middleware(['auth.api', 'role:roles.view']);
-    Route::post('/roles', [RoleController::class, 'store']); //->middleware(['auth.api', 'role:roles.create']);
-    Route::put('/roles', [RoleController::class, 'update']); //->middleware(['auth.api', 'role:roles.update']);
-    Route::delete('/roles/{id}', [RoleController::class, 'destroy']); //->middleware(['auth.api', 'role:roles.delete']);
-});
-
 Route::get('/', function () {
     return response()->failed(['Endpoint yang anda minta tidak tersedia']);
 });
@@ -47,4 +28,33 @@ Route::get('/', function () {
  */
 Route::fallback(function () {
     return response()->failed(['Endpoint yang anda minta tidak tersedia']);
+});
+
+Route::prefix('v1/admin')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+
+    // Protected routes
+    Route::middleware(['auth:sanctum', 'signature:admin'])->group(function () {
+        Route::put('registrations/{id}', [AuthController::class, 'updateRegistrationStatus']);
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+    });
+
+    Route::prefix('classes')->group(function () {
+        Route::get('/', [ClassesController::class, 'index']);
+        Route::post('/', [ClassesController::class, 'store']);
+        Route::get('/{class}', [ClassesController::class, 'show']);
+        Route::put('/{class}', [ClassesController::class, 'update']);
+        Route::delete('/{class}', [ClassesController::class, 'destroy']);
+        Route::post('/restore/{id}', [ClassesController::class, 'restore']);
+    });
+
+    Route::prefix('user-roles')->group(function () {
+        Route::get('/', [UserRoleController::class, 'index']);
+        Route::post('/', [UserRoleController::class, 'store']);
+        Route::get('/{id}', [UserRoleController::class, 'show']);
+        Route::put('/{id}', [UserRoleController::class, 'update']);
+        Route::delete('/{id}', [UserRoleController::class, 'destroy']);
+    });
 });
