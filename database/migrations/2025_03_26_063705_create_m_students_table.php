@@ -16,10 +16,10 @@ return new class extends Migration
             $table->uuid('user_id')->unique();
             $table->string('name');
             $table->string('student_number')->unique();
-            $table->date('birth_date');
-            $table->text('address');
-            $table->string('gender');
-            $table->string('status');
+            $table->date('birth_date')->nullable();
+            $table->text('address')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('status')->default('pending');
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
