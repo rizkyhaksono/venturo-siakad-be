@@ -36,33 +36,38 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
-        if ($this->isMethod('post')) {
-            return $this->createRules();
-        }
-
-        return $this->updateRules();
+        return $this->isMethod('post') ? $this->createRules() : $this->updateRules();
     }
 
+    /**
+     * Validation rules for creating a new user.
+     */
     private function createRules(): array
     {
         return [
-            'name' => 'required|max:100',
-            'photo' => 'nullable|file|image',
-            'email' => 'required|email|unique:m_user',
-            'password' => 'required|min:6',
-            'phone_number' => 'numeric',
-            'm_user_roles_id' => 'required',
+            'username' => ['required', 'string', 'max:255', 'unique:m_users,username'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'email' => ['required', 'email', 'max:255', 'unique:m_users,email'],
+            'role' => ['required', 'string', 'exists:m_user_roles,id'],
+            'photo' => ['nullable', 'file', 'image', 'max:2048'], // 2MB max
+            'phone_number' => ['nullable', 'numeric', 'digits_between:8,15'],
         ];
     }
 
+    /**
+     * Validation rules for updating an existing user.
+     */
     private function updateRules(): array
     {
+        $userId = $this->route('user')?->id ?? $this->user;
+
         return [
-            'name' => 'required|max:100',
-            'photo' => 'nullable|file|image',
-            'email' => 'required|email|unique:m_user,email,'.$this->id,
-            'phone_number' => 'numeric',
-            'm_user_roles_id' => 'required',
+            'username' => ['sometimes', 'string', 'max:255', "unique:m_users,username,{$userId}"],
+            'password' => ['sometimes', 'string', 'min:6', 'confirmed'],
+            'email' => ['sometimes', 'email', 'max:255', "unique:m_users,email,{$userId}"],
+            'role' => ['sometimes', 'string', 'exists:m_user_roles,id'],
+            'photo' => ['nullable', 'file', 'image', 'max:2048'], // 2MB max
+            'phone_number' => ['nullable', 'numeric', 'digits_between:8,15'],
         ];
     }
 
