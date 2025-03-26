@@ -8,30 +8,27 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('m_user_roles', function (Blueprint $table) {
+        Schema::create('m_subject_hours', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->string('access')->unique();
+            $table->integer('start_hour');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->timestamps();
+            $table->softDeletes();
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('m_user_roles');
+        Schema::dropIfExists('m_subject_hours');
     }
 };

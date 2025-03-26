@@ -8,30 +8,32 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('m_user_roles', function (Blueprint $table) {
+        Schema::create('m_students', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->string('access')->unique();
+            $table->uuid('user_id')->unique();
+            $table->string('name');
+            $table->string('student_number')->unique();
+            $table->date('birth_date');
+            $table->text('address');
+            $table->string('gender');
+            $table->string('status');
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('user_id')->references('id')->on('m_users');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('m_user_roles');
+        Schema::dropIfExists('m_students');
     }
 };
