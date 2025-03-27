@@ -14,21 +14,21 @@ class UserRoleSeeder extends Seeder
       [
         'id' => uuid_create(),
         'name' => 'Admin',
-        'access' => 'Can access all features',
+        'access' => 'classes, subject_hours, subject_schedules, subject, user_roles, users, registrations, class_histories',
         'created_at' => now(),
         'updated_at' => now()
       ],
       [
         'id' => uuid_create(),
         'name' => 'Student',
-        'access' => 'Can access student features',
+        'access' => 'classes, subject_hours, subject_schedules, subject',
         'created_at' => now(),
         'updated_at' => now()
       ],
       [
         'id' => uuid_create(),
         'name' => 'Teacher',
-        'access' => 'Can access teacher features',
+        'access' => 'subject_hours, subject_schedules, subject, students',
         'created_at' => now(),
         'updated_at' => now()
       ]

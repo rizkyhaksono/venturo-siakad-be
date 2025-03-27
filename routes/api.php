@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\Admin\AuthController;
 use App\Http\Controllers\Api\v1\Admin\ClassesController;
 use App\Http\Controllers\Api\v1\Admin\UserRoleController;
+use App\Http\Controllers\Api\v1\Admin\RegistrationController;
+use App\Http\Controllers\Api\v1\Admin\ClassHistoriesController;
+
+// Student Controllers
+use App\Http\Controllers\Api\v1\Student\ClassesController as StudentClassesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,30 +36,63 @@ Route::fallback(function () {
 });
 
 Route::prefix('v1/admin')->group(function () {
+    // Public routes
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 
-    // Protected routes
-    Route::middleware(['auth:sanctum', 'signature:admin'])->group(function () {
-        Route::put('registrations/{id}', [AuthController::class, 'updateRegistrationStatus']);
+    // Protected admin routes
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
-    });
 
-    Route::prefix('classes')->group(function () {
-        Route::get('/', [ClassesController::class, 'index']);
-        Route::post('/', [ClassesController::class, 'store']);
-        Route::get('/{class}', [ClassesController::class, 'show']);
-        Route::put('/{class}', [ClassesController::class, 'update']);
-        Route::delete('/{class}', [ClassesController::class, 'destroy']);
-        Route::post('/restore/{id}', [ClassesController::class, 'restore']);
-    });
+        // Registration management
+        Route::put('registrations/{id}', [RegistrationController::class, 'updateRegistrationStatus']);
 
-    Route::prefix('user-roles')->group(function () {
-        Route::get('/', [UserRoleController::class, 'index']);
-        Route::post('/', [UserRoleController::class, 'store']);
-        Route::get('/{id}', [UserRoleController::class, 'show']);
-        Route::put('/{id}', [UserRoleController::class, 'update']);
-        Route::delete('/{id}', [UserRoleController::class, 'destroy']);
+        // Classes management
+        Route::prefix('classes')->group(function () {
+            Route::get('/', [ClassesController::class, 'index']);
+            Route::post('/', [ClassesController::class, 'store']);
+            Route::get('/{class}', [ClassesController::class, 'show']);
+            Route::put('/{class}', [ClassesController::class, 'update']);
+            Route::delete('/{class}', [ClassesController::class, 'destroy']);
+            Route::post('/restore/{id}', [ClassesController::class, 'restore']);
+        });
+
+        // User roles management
+        Route::prefix('user-roles')->group(function () {
+            Route::get('/', [UserRoleController::class, 'index']);
+            Route::post('/', [UserRoleController::class, 'store']);
+            Route::get('/{id}', [UserRoleController::class, 'show']);
+            Route::put('/{id}', [UserRoleController::class, 'update']);
+            Route::delete('/{id}', [UserRoleController::class, 'destroy']);
+        });
+
+        // Class histories management
+        Route::prefix('class-histories')->group(function () {
+            Route::get('/', [ClassHistoriesController::class, 'index']);
+            Route::post('/', [ClassHistoriesController::class, 'store']);
+            Route::get('/{id}', [ClassHistoriesController::class, 'show']);
+            Route::put('/{id}', [ClassHistoriesController::class, 'update']);
+            Route::delete('/{id}', [ClassHistoriesController::class, 'destroy']);
+            Route::post('/restore/{id}', [ClassHistoriesController::class, 'restore']);
+        });
+    });
+});
+
+Route::prefix('v1/student')->group(function () {
+    // Public routes
+    // Route::post('register', [AuthController::class, 'register']);
+    // Route::post('login', [AuthController::class, 'login']);
+
+    // Protected student routes
+    Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
+        // Route::post('logout', [AuthController::class, 'logout']);
+        // Route::get('me', [AuthController::class, 'me']);
+
+        // Classes management
+        Route::prefix('classes')->group(function () {
+            Route::get('/', [StudentClassesController::class, 'index']);
+            Route::get('/{class}', [StudentClassesController::class, 'show']);
+        });
     });
 });

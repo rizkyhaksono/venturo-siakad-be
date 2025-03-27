@@ -14,8 +14,7 @@ class ClassesRequest extends FormRequest
    */
   public function authorize(): bool
   {
-    // Adjust authorization logic based on your needs
-    return auth()->check(); // Example: only authenticated users
+    return auth()->check();
   }
 
   /**

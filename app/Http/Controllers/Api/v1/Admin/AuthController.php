@@ -8,7 +8,6 @@ use App\Models\RegistrationsModel;
 use App\Models\StudentsModel;
 use App\Models\UsersModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 
@@ -24,8 +23,6 @@ class AuthController extends Controller
   {
     try {
       $validated = $request->validated();
-
-      // Create the user
       $user = UsersModel::create([
         'username' => $validated['username'],
         'email' => $validated['email'],
@@ -34,29 +31,25 @@ class AuthController extends Controller
         'phone_number' => $validated['phone_number'] ?? null,
       ]);
 
-      // Handle photo upload if present
       if ($request->hasFile('photo')) {
         $photoPath = $request->file('photo')->store('user-photos', 'public');
         $user->photo = $photoPath;
         $user->save();
       }
 
-      // Create the student record linked to the user
       $student = StudentsModel::create([
         'user_id' => $user->id,
-        'name' => $validated['username'], // Adjust this based on your needs
-        'student_number' => $this->generateStudentNumber(), // Implement this method
+        'name' => $validated['username'],
+        'student_number' => $this->generateStudentNumber(),
         'created_by' => $user->id,
       ]);
 
-      // Create registration record with pending status
       RegistrationsModel::create([
-        'student_id' => $student->id, // Use student ID, not user ID
+        'student_id' => $student->id,
         'status' => 'pending',
         'created_by' => $user->id,
       ]);
 
-      // Generate a Sanctum token for the user
       $token = $user->createToken('auth_token')->plainTextToken;
 
       return response()->json([
@@ -94,7 +87,6 @@ class AuthController extends Controller
       ], 401);
     }
 
-    // check if registration is pending or rejected and student status
     $student = StudentsModel::where('user_id', $user->id)->first();
     $registration = RegistrationsModel::where('student_id', $student->id)->first();
 
@@ -104,7 +96,6 @@ class AuthController extends Controller
       ], 403);
     }
 
-    // Generate token regardless of registration status
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([
@@ -116,36 +107,7 @@ class AuthController extends Controller
   }
 
   /**
-   * Approve or reject registration (Admin only)
-   *
-   * @param Request $request
-   * @param string $registrationId
-   * @return JsonResponse
-   */
-  public function updateRegistrationStatus(Request $request, string $registrationId): JsonResponse
-  {
-    // Add middleware to ensure only admins can access this
-    $this->middleware('role:admin');
-
-    $request->validate([
-      'status' => 'required|in:accepted,rejected'
-    ]);
-
-    $registration = RegistrationsModel::findOrFail($registrationId);
-
-    $registration->update([
-      'status' => $request->status,
-      'updated_by' => Auth::id()
-    ]);
-
-    return response()->json([
-      'message' => "Registration {$request->status} successfully",
-      'registration' => $registration
-    ]);
-  }
-
-  /**
-   * Logout user
+   * Logout user (revoke token)
    *
    * @param Request $request
    * @return JsonResponse
@@ -160,7 +122,7 @@ class AuthController extends Controller
   }
 
   /**
-   * Get authenticated user
+   * Get authenticated user details
    *
    * @param Request $request
    * @return JsonResponse
@@ -180,7 +142,6 @@ class AuthController extends Controller
    */
   private function generateStudentNumber(): string
   {
-    // Simple example: you can customize this logic
     return 'STU' . time() . rand(1000, 9999);
   }
 }
