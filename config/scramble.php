@@ -83,8 +83,8 @@ return [
      */
     'servers' => [
         'Local' => 'api',
-        'Dev' => 'http://venturo.siakad.be.natee.my.id/api/v1',
-        'Prod' => 'http://venturo.siakad.be.natee.my.id/api/v1',
+        'Dev' => 'http://venturo.siakad.be.natee.my.id/api',
+        'Prod' => 'http://venturo.siakad.be.natee.my.id/api',
     ],
 
     /**
