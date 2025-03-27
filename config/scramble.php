@@ -1,6 +1,7 @@
 <?php
 
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 
 return [
     /*
@@ -85,6 +86,19 @@ return [
         'Local' => 'api',
         'Dev' => 'https://venturo.siakad.be.natee.my.id/api',
         'Prod' => 'https://venturo.siakad.be.natee.my.id/api',
+    ],
+
+    'security' => [
+        'BearerAuth' => [
+            'type' => 'http',
+            'scheme' => 'bearer',
+            'bearerFormat' => 'JWT',
+            'description' => 'Enter your bearer token in the format **Bearer &lt;token&gt;**'
+        ],
+    ],
+
+    'security_requirements' => [
+        ['BearerAuth' => []],
     ],
 
     /**

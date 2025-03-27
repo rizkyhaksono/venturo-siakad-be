@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +17,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Scramble::configure()
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+                $openApi->secure(
+                    SecurityScheme::http('bearer')
+                );
+            });
+
         Response::macro('success', function ($data = [], $message = '', $settings = []) {
             return Response::make([
                 'status_code' => 200,
@@ -24,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Response::macro('successWithSignature', function ($data = [], $message = '', $settings = []) {
-            $publicKey = file_get_contents(storage_path().'/auth/public.pem');
+            $publicKey = file_get_contents(storage_path() . '/auth/public.pem');
             $signature = (openssl_public_encrypt(json_encode($data), $encrypted, $publicKey)) ? base64_encode($encrypted) : null;
 
             return Response::make([
@@ -59,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
                 'settings' => $settings,
             ];
 
-            $publicKey = file_get_contents(storage_path().'/auth/public.pem');
+            $publicKey = file_get_contents(storage_path() . '/auth/public.pem');
             $signature = (openssl_public_encrypt(json_encode($content), $encrypted, $publicKey)) ? base64_encode($encrypted) : null;
 
             return Response::make($content, $httpCode, ['signature' => $signature]);
