@@ -81,7 +81,11 @@ return [
      * ],
      * ```
      */
-    'servers' => null,
+    'servers' => [
+        'Local' => 'api',
+        'Dev' => 'http://venturo.siakad.be.natee.my.id/api/v1',
+        'Prod' => 'http://venturo.siakad.be.natee.my.id/api/v1',
+    ],
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.
