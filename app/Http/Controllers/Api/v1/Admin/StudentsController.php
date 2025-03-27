@@ -16,7 +16,7 @@ class StudentsController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $students = StudentsModel::with(['class', 'studyYear'])
+      $students = StudentsModel::with(['user', 'registrations', 'classHistories'])
         ->latest()
         ->paginate(10);
 
@@ -45,7 +45,7 @@ class StudentsController extends Controller
       return response()->json([
         'status' => 'success',
         'message' => 'Student created successfully',
-        'data' => $student->load(['class', 'studyYear']),
+        'data' => $student->load(['user', 'registrations', 'classHistories']),
       ], 201);
     } catch (Exception $e) {
       return response()->json([
@@ -62,7 +62,7 @@ class StudentsController extends Controller
   public function show(string $id): JsonResponse
   {
     try {
-      $student = StudentsModel::with(['class', 'studyYear'])->findOrFail($id);
+      $student = StudentsModel::with(['user', 'registrations', 'classHistories'])->findOrFail($id);
 
       return response()->json([
         'status' => 'success',
@@ -90,7 +90,7 @@ class StudentsController extends Controller
       return response()->json([
         'status' => 'success',
         'message' => 'Student updated successfully',
-        'data' => $student->load(['class', 'studyYear']),
+        'data' => $student->load(['user', 'registrations', 'classHistories']),
       ]);
     } catch (Exception $e) {
       return response()->json([
@@ -135,7 +135,7 @@ class StudentsController extends Controller
       return response()->json([
         'status' => 'success',
         'message' => 'Student restored successfully',
-        'data' => $student->load(['class', 'studyYear']),
+        'data' => $student->load(['user', 'registrations', 'classHistories']),
       ]);
     } catch (Exception $e) {
       return response()->json([
