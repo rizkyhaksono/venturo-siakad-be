@@ -96,10 +96,10 @@ class AuthController extends Controller
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->success([
+      'access_token' => $token,
       'message' => 'Login successful',
       'user' => $user,
       'student' => $student,
-      'access_token' => $token,
     ], 200);
   }
 
