@@ -30,7 +30,7 @@ class RoleMiddleware
             $roleModel = UserRoleModel::find($userRole);
 
             if (!$roleModel) {
-                return response()->json([
+                return response()->failed([
                     'status_code' => 403,
                     'errors' => ['Role tidak ditemukan'],
                     'settings' => []
@@ -40,7 +40,7 @@ class RoleMiddleware
             $roleName = strtolower($roleModel->name);
 
             if (!in_array($roleName, ['admin', 'teacher', 'student'])) {
-                return response()->json([
+                return response()->failed([
                     'status_code' => 403,
                     'errors' => ['Role tidak diizinkan'],
                     'settings' => []
@@ -56,19 +56,19 @@ class RoleMiddleware
                 return $next($request);
             }
 
-            return response()->json([
+            return response()->failed([
                 'status_code' => 403,
                 'errors' => ['Anda tidak memiliki credential untuk mengakses data ini'],
                 'settings' => []
             ], 403);
         } catch (AuthenticationException $e) {
-            return response()->json([
+            return response()->failed([
                 'status_code' => 401,
                 'errors' => ['Token tidak valid atau telah kadaluarsa'],
                 'settings' => []
             ], 401);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->failed([
                 'status_code' => 500,
                 'errors' => [$e->getMessage()],
                 'settings' => []

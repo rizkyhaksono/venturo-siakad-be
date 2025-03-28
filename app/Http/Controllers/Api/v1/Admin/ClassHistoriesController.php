@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassHistoriesRequest;
 use App\Models\ClassHistoriesModel;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class ClassHistoriesController extends Controller
@@ -28,14 +26,15 @@ class ClassHistoriesController extends Controller
 
       $classHistories = $query->paginate($request->input('per_page', 10));
 
-      return response()->json([
+      return response()->success([
         'status' => true,
         'data' => $classHistories
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Failed to fetch class histories'
+        'message' => 'Failed to fetch class histories',
+        'error' => $e->getMessage()
       ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
   }
@@ -45,32 +44,22 @@ class ClassHistoriesController extends Controller
    */
   public function store(ClassHistoriesRequest $request)
   {
-    DB::beginTransaction();
     try {
       $validated = $request->validated();
+      $validated['created_by'] = auth()->id();
 
-      $classHistory = ClassHistoriesModel::create([
-        'student_id' => $validated['student_id'],
-        'class_id' => $validated['class_id'],
-        'study_year_id' => $validated['study_year_id'],
-        'previous_status' => $validated['previous_status'],
-        'new_status' => $validated['new_status'],
-        'entry_date' => $validated['entry_date'],
-        'created_by' => auth()->id()
-      ]);
+      $classHistory = ClassHistoriesModel::create($validated);
 
-      DB::commit();
-
-      return response()->json([
+      return response()->success([
         'status' => true,
         'message' => 'Class history created successfully',
-        'data' => $classHistory
+        'data' => $classHistory->load(['student', 'class', 'studyYear'])
       ], Response::HTTP_CREATED);
     } catch (\Exception $e) {
-      DB::rollBack();
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Failed to create class history'
+        'message' => 'Failed to create class history',
+        'error' => $e->getMessage()
       ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
   }
@@ -83,14 +72,15 @@ class ClassHistoriesController extends Controller
     try {
       $classHistory = ClassHistoriesModel::with(['student', 'class', 'studyYear'])->findOrFail($id);
 
-      return response()->json([
+      return response()->success([
         'status' => true,
         'data' => $classHistory
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Class history not found'
+        'message' => 'Class history not found',
+        'error' => $e->getMessage()
       ], Response::HTTP_NOT_FOUND);
     }
   }
@@ -100,33 +90,23 @@ class ClassHistoriesController extends Controller
    */
   public function update(ClassHistoriesRequest $request, $id)
   {
-    DB::beginTransaction();
     try {
       $validated = $request->validated();
+      $validated['updated_by'] = auth()->id();
 
       $classHistory = ClassHistoriesModel::findOrFail($id);
-      $classHistory->update([
-        'student_id' => $validated['student_id'],
-        'class_id' => $validated['class_id'],
-        'study_year_id' => $validated['study_year_id'],
-        'previous_status' => $validated['previous_status'],
-        'new_status' => $validated['new_status'],
-        'entry_date' => $validated['entry_date'],
-        'updated_by' => auth()->id()
-      ]);
+      $classHistory->update($validated);
 
-      DB::commit();
-
-      return response()->json([
+      return response()->success([
         'status' => true,
         'message' => 'Class history updated successfully',
         'data' => $classHistory
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
-      DB::rollBack();
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Failed to update class history'
+        'message' => 'Failed to update class history',
+        'error' => $e->getMessage()
       ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
   }
@@ -136,24 +116,21 @@ class ClassHistoriesController extends Controller
    */
   public function destroy($id)
   {
-    DB::beginTransaction();
     try {
       $classHistory = ClassHistoriesModel::findOrFail($id);
       $classHistory->deleted_by = auth()->id();
       $classHistory->save();
       $classHistory->delete();
 
-      DB::commit();
-
-      return response()->json([
+      return response()->success([
         'status' => true,
         'message' => 'Class history deleted successfully'
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
-      DB::rollBack();
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Failed to delete class history'
+        'message' => 'Failed to delete class history',
+        'error' => $e->getMessage()
       ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
   }
@@ -163,23 +140,20 @@ class ClassHistoriesController extends Controller
    */
   public function restore($id): JsonResponse
   {
-    DB::beginTransaction();
     try {
       $classHistory = ClassHistoriesModel::withTrashed()->findOrFail($id);
       $classHistory->restore();
 
-      DB::commit();
-
-      return response()->json([
+      return response()->success([
         'status' => true,
         'message' => 'Class history restored successfully',
         'data' => $classHistory
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
-      DB::rollBack();
-      return response()->json([
+      return response()->failed([
         'status' => false,
-        'message' => 'Failed to restore class history'
+        'message' => 'Failed to restore class history',
+        'error' => $e->getMessage()
       ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
   }

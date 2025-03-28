@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudyYearRequest;
 use App\Models\StudyYearsModel;
-use Illuminate\Http\JsonResponse;
 use Exception;
 
 class StudyYearController extends Controller
@@ -13,17 +12,17 @@ class StudyYearController extends Controller
   /**
    * Display a listing of the study years.
    */
-  public function index(): JsonResponse
+  public function index()
   {
     try {
       $studyYears = StudyYearsModel::latest()->paginate(10);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $studyYears,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve study years',
         'error' => $e->getMessage(),
@@ -34,17 +33,18 @@ class StudyYearController extends Controller
   /**
    * Store a newly created study year in storage.
    */
-  public function store(StudyYearRequest $request): JsonResponse
+  public function store(StudyYearRequest $request)
   {
     try {
       $studyYear = StudyYearsModel::create($request->validated());
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
+        'message' => 'Study year created successfully',
         'data' => $studyYear,
       ], 201);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to create study year',
         'error' => $e->getMessage(),
@@ -55,15 +55,15 @@ class StudyYearController extends Controller
   /**
    * Display the specified study year.
    */
-  public function show(StudyYearsModel $studyYear): JsonResponse
+  public function show(StudyYearsModel $studyYear)
   {
     try {
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $studyYear,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve study year',
         'error' => $e->getMessage(),
@@ -74,17 +74,18 @@ class StudyYearController extends Controller
   /**
    * Update the specified study year in storage.
    */
-  public function update(StudyYearRequest $request, StudyYearsModel $studyYear): JsonResponse
+  public function update(StudyYearRequest $request, StudyYearsModel $studyYear)
   {
     try {
       $studyYear->update($request->validated());
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
+        'message' => 'Study year updated successfully',
         'data' => $studyYear,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to update study year',
         'error' => $e->getMessage(),
@@ -95,17 +96,17 @@ class StudyYearController extends Controller
   /**
    * Remove the specified study year from storage.
    */
-  public function destroy(StudyYearsModel $studyYear): JsonResponse
+  public function destroy(StudyYearsModel $studyYear)
   {
     try {
       $studyYear->delete();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Study year deleted successfully',
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to delete study year',
         'error' => $e->getMessage(),
@@ -116,20 +117,21 @@ class StudyYearController extends Controller
   /**
    * Restore the specified study year.
    */
-  public function restore($id): JsonResponse
+  public function restore($id)
   {
     try {
       $studyYear = StudyYearsModel::withTrashed()->findOrFail($id);
       $studyYear->restore();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Study year restored successfully',
-      ]);
+        'data' => $studyYear,
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to restwore study year',
+        'message' => 'Failed to restore study year',
         'error' => $e->getMessage(),
       ], 500);
     }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRoleRequest;
 use App\Models\UserRoleModel;
-use Illuminate\Http\JsonResponse;
 use Exception;
 
 class UserRoleController extends Controller
@@ -13,19 +12,19 @@ class UserRoleController extends Controller
   /**
    * Display a listing of user roles.
    */
-  public function index(): JsonResponse
+  public function index()
   {
     try {
-      $userRoles = UserRoleModel::with(['roles'])
+      $userRoles = UserRoleModel::with(['users'])
         ->latest()
         ->paginate(10);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $userRoles,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve user roles',
         'error' => $e->getMessage(),
@@ -36,19 +35,19 @@ class UserRoleController extends Controller
   /**
    * Store a newly created user role.
    */
-  public function store(UserRoleRequest $request): JsonResponse
+  public function store(UserRoleRequest $request)
   {
     try {
       $validated = $request->validated();
       $userRole = UserRoleModel::create($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'User role created successfully',
         'data' => $userRole->load('roles'),
       ], 201);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to create user role',
         'error' => $e->getMessage(),
@@ -59,23 +58,17 @@ class UserRoleController extends Controller
   /**
    * Display the specified user role.
    */
-  public function show(string $id): JsonResponse
+  public function show(string $id)
   {
     try {
-      $userRole = UserRoleModel::with(['roles'])->findOrFail($id);
+      $userRole = UserRoleModel::with(['users'])->findOrFail($id);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $userRole,
-      ]);
-    } catch (ModelNotFoundException $e) {
-      return response()->json([
-        'status' => 'error',
-        'message' => 'User role not found',
-        'error' => $e->getMessage(),
-      ], 404);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve user role',
         'error' => $e->getMessage(),
@@ -86,26 +79,20 @@ class UserRoleController extends Controller
   /**
    * Update the specified user role.
    */
-  public function update(UserRoleRequest $request, string $id): JsonResponse
+  public function update(UserRoleRequest $request, string $id)
   {
     try {
       $validated = $request->validated();
       $userRole = UserRoleModel::findOrFail($id);
       $userRole->update($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'User role updated successfully',
         'data' => $userRole->load('roles'),
-      ]);
-    } catch (ModelNotFoundException $e) {
-      return response()->json([
-        'status' => 'error',
-        'message' => 'User role not found',
-        'error' => $e->getMessage(),
-      ], 404);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to update user role',
         'error' => $e->getMessage(),
@@ -116,24 +103,18 @@ class UserRoleController extends Controller
   /**
    * Remove the specified user role.
    */
-  public function destroy(string $id): JsonResponse
+  public function destroy(string $id)
   {
     try {
       $userRole = UserRoleModel::findOrFail($id);
       $userRole->delete();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'User role deleted successfully',
-      ]);
-    } catch (ModelNotFoundException $e) {
-      return response()->json([
-        'status' => 'error',
-        'message' => 'User role not found',
-        'error' => $e->getMessage(),
-      ], 404);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to delete user role',
         'error' => $e->getMessage(),
@@ -144,25 +125,19 @@ class UserRoleController extends Controller
   /**
    * Restore a soft-deleted user role.
    */
-  public function restore(string $id): JsonResponse
+  public function restore(string $id)
   {
     try {
       $userRole = UserRoleModel::withTrashed()->findOrFail($id);
       $userRole->restore();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'User role restored successfully',
         'data' => $userRole->load('roles'),
-      ]);
-    } catch (ModelNotFoundException $e) {
-      return response()->json([
-        'status' => 'error',
-        'message' => 'User role not found',
-        'error' => $e->getMessage(),
-      ], 404);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to restore user role',
         'error' => $e->getMessage(),

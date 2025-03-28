@@ -17,7 +17,7 @@ class CheckRegistrationStatus
       $registration = RegistrationsModel::where('student_id', $user->id)->first();
 
       if (!$registration || $registration->status !== 'accepted') {
-        return response()->json([
+        return response()->failed([
           'message' => 'Your registration is pending approval or has been rejected'
         ], 403);
       }

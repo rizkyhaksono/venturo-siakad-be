@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\v1\Admin\{
     HomeroomTeachersController,
     StudentsController,
     StudyYearController,
-    SubjectHoursController
+    SubjectHoursController,
+    SubjectSchedulesController,
 };
 
 // Public routes
@@ -42,4 +43,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     Route::apiResource('study-years', StudyYearController::class);
     Route::post('study-years/{id}/restore', [StudyYearController::class, 'restore']);
+
+    Route::apiResource('subject-hours', SubjectHoursController::class);
+    Route::post('subject-hours/{id}/restore', [SubjectHoursController::class, 'restore']);
+
+    Route::apiResource('subject-schedules', SubjectSchedulesController::class);
+    Route::post('subject-schedules/{id}/restore', [SubjectSchedulesController::class, 'restore']);
 });

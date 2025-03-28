@@ -42,4 +42,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('student')->group(function () {
         require __DIR__ . '/api/v1/student.php';
     });
+
+    // Teacher Routes
+    Route::prefix('teacher')->group(function () {
+        require __DIR__ . '/api/v1/teacher.php';
+    });
 });

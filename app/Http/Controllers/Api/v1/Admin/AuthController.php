@@ -9,7 +9,6 @@ use App\Models\StudentsModel;
 use App\Models\UsersModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -17,9 +16,8 @@ class AuthController extends Controller
    * Register a new user (creates user, student, and pending registration)
    *
    * @param AuthRequest $request
-   * @return JsonResponse
    */
-  public function register(AuthRequest $request): JsonResponse
+  public function register(AuthRequest $request)
   {
     try {
       $validated = $request->validated();
@@ -52,14 +50,14 @@ class AuthController extends Controller
 
       $token = $user->createToken('auth_token')->plainTextToken;
 
-      return response()->json([
+      return response()->success([
         'message' => 'Registration submitted successfully. Please wait for admin approval.',
         'user' => $user,
         'student' => $student,
         'access_token' => $token,
       ], 201);
     } catch (\Exception $e) {
-      return response()->json([
+      return response()->failed([
         'message' => 'Registration failed',
         'error' => $e->getMessage(),
       ], 500);
@@ -70,9 +68,8 @@ class AuthController extends Controller
    * Login user and return token (checks registration status)
    *
    * @param Request $request
-   * @return JsonResponse
    */
-  public function login(Request $request): JsonResponse
+  public function login(Request $request)
   {
     $credentials = $request->validate([
       'email' => ['required', 'email'],
@@ -82,7 +79,7 @@ class AuthController extends Controller
     $user = UsersModel::where('email', $credentials['email'])->first();
 
     if (!$user || !Hash::check($credentials['password'], $user->password)) {
-      return response()->json([
+      return response()->failed([
         'message' => 'Invalid login credentials'
       ], 401);
     }
@@ -91,48 +88,45 @@ class AuthController extends Controller
     $registration = RegistrationsModel::where('student_id', $student->id)->first();
 
     if (!$registration || $registration->status !== 'accepted') {
-      return response()->json([
+      return response()->failed([
         'message' => 'Your registration is pending approval or has been rejected'
       ], 403);
     }
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json([
+    return response()->success([
       'message' => 'Login successful',
-      'access_token' => $token,
       'user' => $user,
-      'student' => $student
-    ]);
+      'student' => $student,
+      'access_token' => $token,
+    ], 200);
   }
 
   /**
    * Logout user (revoke token)
    *
    * @param Request $request
-   * @return JsonResponse
    */
-  public function logout(Request $request): JsonResponse
+  public function logout(Request $request)
   {
     $request->user()->currentAccessToken()->delete();
 
-    return response()->json([
-      'message' => 'Successfully logged out'
-    ]);
+    return response()->success([
+      'message' => 'Logout successful',
+    ], 200);
   }
 
   /**
    * Get authenticated user details
    *
    * @param Request $request
-   * @return JsonResponse
    */
-  public function me(Request $request): JsonResponse
+  public function me(Request $request)
   {
-    return response()->json([
-      'message' => 'User retrieved successfully',
+    return response()->success([
       'user' => $request->user(),
-    ]);
+    ], 200);
   }
 
   /**

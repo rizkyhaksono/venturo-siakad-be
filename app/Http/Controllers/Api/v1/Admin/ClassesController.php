@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassesRequest;
 use App\Models\ClassesModel;
-use Illuminate\Http\JsonResponse;
 use Exception;
 
 class ClassesController extends Controller
@@ -13,19 +12,19 @@ class ClassesController extends Controller
   /**
    * Display a listing of classes.
    */
-  public function index(): JsonResponse
+  public function index()
   {
     try {
       $classes = ClassesModel::with(['studyYear'])
         ->latest()
         ->paginate(10);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $classes,
       ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve classes',
         'error' => $e->getMessage(),
@@ -36,19 +35,19 @@ class ClassesController extends Controller
   /**
    * Store a newly created class.
    */
-  public function store(ClassesRequest $request): JsonResponse
+  public function store(ClassesRequest $request)
   {
     try {
       $validated = $request->validated();
       $class = ClassesModel::create($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Class created successfully',
         'data' => $class->load('studyYear'),
-      ], 201);
+      ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to create class',
         'error' => $e->getMessage(),
@@ -59,10 +58,10 @@ class ClassesController extends Controller
   /**
    * Display the specified class.
    */
-  public function show(ClassesModel $class): JsonResponse
+  public function show(ClassesModel $class)
   {
     try {
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $class->load([
           'studyYear',
@@ -73,7 +72,7 @@ class ClassesController extends Controller
         ]),
       ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve class',
         'error' => $e->getMessage(),
@@ -84,19 +83,19 @@ class ClassesController extends Controller
   /**
    * Update the specified class.
    */
-  public function update(ClassesRequest $request, ClassesModel $class): JsonResponse
+  public function update(ClassesRequest $request, ClassesModel $class)
   {
     try {
       $validated = $request->validated();
       $class->update($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Class updated successfully',
-        'data' => $class->fresh()->load('studyYear'),
+        'data' => $class->load('studyYear'),
       ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to update class',
         'error' => $e->getMessage(),
@@ -107,18 +106,18 @@ class ClassesController extends Controller
   /**
    * Remove the specified class (soft delete).
    */
-  public function destroy(ClassesModel $class): JsonResponse
+  public function destroy(ClassesModel $class)
   {
     try {
       $class->update(['deleted_by' => auth()->id()]);
       $class->delete();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Class deleted successfully',
       ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to delete class',
         'error' => $e->getMessage(),
@@ -129,19 +128,19 @@ class ClassesController extends Controller
   /**
    * Restore a soft-deleted class.
    */
-  public function restore(string $id): JsonResponse
+  public function restore(string $id)
   {
     try {
       $class = ClassesModel::withTrashed()->findOrFail($id);
       $class->restore();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Class restored successfully',
         'data' => $class->load('studyYear'),
       ]);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to restore class',
         'error' => $e->getMessage(),

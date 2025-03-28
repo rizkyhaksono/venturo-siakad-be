@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RegistrationsModel;
 use App\Models\StudentsModel;
@@ -17,9 +16,8 @@ class RegistrationController extends Controller
    *
    * @param Request $request
    * @param string $registrationId
-   * @return JsonResponse
    */
-  public function updateRegistrationStatus(Request $request, string $registrationId): JsonResponse
+  public function updateRegistrationStatus(Request $request, string $registrationId)
   {
     try {
       $request->validate([
@@ -27,7 +25,7 @@ class RegistrationController extends Controller
       ]);
 
       if (!Uuid::isValid($registrationId)) {
-        return response()->json([
+        return response()->failed([
           'status' => 'error',
           'message' => 'Invalid registration ID format'
         ], 400);
@@ -37,9 +35,9 @@ class RegistrationController extends Controller
       $student = StudentsModel::findOrFail($registration->student_id);
 
       if (!$registration->status || !$student->status) {
-        return response()->json([
+        return response()->failed([
           'status' => 'error',
-          'message' => 'Registration has been processed'
+          'message' => 'Registration or student status is already updated'
         ], 400);
       }
 
@@ -53,18 +51,18 @@ class RegistrationController extends Controller
         'updated_by' => Auth::id()
       ]);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
-        'message' => "Registration {$request->status} successfully",
-        'data' => $registration->load('student')
+        'message' => 'Registration status updated successfully',
+        'data' => $registration->load(['student', 'class', 'studyYear'])
       ]);
     } catch (ModelNotFoundException $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
-        'message' => 'Registration not found'
+        'message' => 'Registration or student not found'
       ], 404);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to update registration status',
         'error' => $e->getMessage()

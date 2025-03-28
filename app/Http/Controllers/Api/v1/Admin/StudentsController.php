@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentsRequest;
 use App\Models\StudentsModel;
-use Illuminate\Http\JsonResponse;
 use Exception;
 
 class StudentsController extends Controller
@@ -13,19 +12,19 @@ class StudentsController extends Controller
   /**
    * Display a listing of students.
    */
-  public function index(): JsonResponse
+  public function index()
   {
     try {
       $students = StudentsModel::with(['user', 'registrations', 'classHistories'])
         ->latest()
         ->paginate(10);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $students,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve students',
         'error' => $e->getMessage(),
@@ -36,19 +35,19 @@ class StudentsController extends Controller
   /**
    * Store a newly created student.
    */
-  public function store(StudentsRequest $request): JsonResponse
+  public function store(StudentsRequest $request)
   {
     try {
       $validated = $request->validated();
       $student = StudentsModel::create($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Student created successfully',
         'data' => $student->load(['user', 'registrations', 'classHistories']),
       ], 201);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to create student',
         'error' => $e->getMessage(),
@@ -59,17 +58,17 @@ class StudentsController extends Controller
   /**
    * Display the specified student.
    */
-  public function show(string $id): JsonResponse
+  public function show(string $id)
   {
     try {
       $student = StudentsModel::with(['user', 'registrations', 'classHistories'])->findOrFail($id);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'data' => $student,
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to retrieve student',
         'error' => $e->getMessage(),
@@ -80,20 +79,20 @@ class StudentsController extends Controller
   /**
    * Update the specified student.
    */
-  public function update(StudentsRequest $request, string $id): JsonResponse
+  public function update(StudentsRequest $request, string $id)
   {
     try {
       $validated = $request->validated();
       $student = StudentsModel::findOrFail($id);
       $student->update($validated);
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Student updated successfully',
         'data' => $student->load(['user', 'registrations', 'classHistories']),
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to update student',
         'error' => $e->getMessage(),
@@ -104,18 +103,18 @@ class StudentsController extends Controller
   /**
    * Remove the specified student.
    */
-  public function destroy(string $id): JsonResponse
+  public function destroy(string $id)
   {
     try {
       $student = StudentsModel::findOrFail($id);
       $student->delete();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Student deleted successfully',
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to delete student',
         'error' => $e->getMessage(),
@@ -126,19 +125,19 @@ class StudentsController extends Controller
   /**
    * Restore the specified student.
    */
-  public function restore(string $id): JsonResponse
+  public function restore(string $id)
   {
     try {
       $student = StudentsModel::withTrashed()->findOrFail($id);
       $student->restore();
 
-      return response()->json([
+      return response()->success([
         'status' => 'success',
         'message' => 'Student restored successfully',
         'data' => $student->load(['user', 'registrations', 'classHistories']),
-      ]);
+      ], 200);
     } catch (Exception $e) {
-      return response()->json([
+      return response()->failed([
         'status' => 'error',
         'message' => 'Failed to restore student',
         'error' => $e->getMessage(),

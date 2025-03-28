@@ -3,44 +3,69 @@
 namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ClassesRequest;
 use App\Models\ClassesModel;
-use Illuminate\Http\JsonResponse;
 
 class ClassesController extends Controller
 {
   /**
-   * Display a listing of classes.
+   * Display a listing of classes assigned to the authenticated student.
    */
-  public function index(): JsonResponse
+  public function index()
   {
-    $classes = ClassesModel::with(['studyYear'])
-      ->latest()
-      ->paginate(10);
+    try {
+      $studentId = auth()->user()->student->id;
 
-    return response()->json([
-      'status' => 'success',
-      'data' => $classes,
-    ]);
+      $classes = ClassesModel::with(['studyYear'])
+        ->whereHas('classHistories', function ($query) use ($studentId) {
+          $query->where('student_id', $studentId);
+        })
+        ->latest()
+        ->paginate(10);
+
+      return response()->success([
+        'status' => 'success',
+        'data' => $classes,
+      ]);
+    } catch (Exception $e) {
+      return response()->failed([
+        'status' => 'error',
+        'message' => 'Failed to retrieve classes',
+        'error' => $e->getMessage(),
+      ], 500);
+    }
   }
 
   /**
    * Display the specified class.
    */
-  public function show(string $id): JsonResponse
+  public function show(string $id)
   {
-    $class = ClassesModel::with(['studyYear'])->find($id);
+    try {
+      $studentId = auth()->user()->student->id;
 
-    if (! $class) {
-      return response()->json([
+      $class = ClassesModel::with(['studyYear'])
+        ->whereHas('classHistories', function ($query) use ($studentId) {
+          $query->where('student_id', $studentId);
+        })
+        ->find($id);
+
+      if (!$class) {
+        return response()->failed([
+          'status' => 'failed',
+          'message' => 'Kelas tidak ditemukan',
+        ], 404);
+      }
+
+      return response()->success([
+        'status' => 'success',
+        'data' => $class,
+      ]);
+    } catch (Exception $e) {
+      return response()->failed([
         'status' => 'error',
-        'message' => 'Class not found',
-      ], 404);
+        'message' => 'Failed to retrieve class',
+        'error' => $e->getMessage(),
+      ], 500);
     }
-
-    return response()->json([
-      'status' => 'success',
-      'data' => $class,
-    ]);
   }
 }
