@@ -29,6 +29,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     // User management
     Route::get('users/me', [UsersController::class, 'me']);
     Route::apiResource('users', UsersController::class);
+    Route::post('users/{id}/restore', [UsersController::class, 'restore']);
+    Route::put('users/{id}/change-role', [UsersController::class, 'changeRole']);
 
     // Teacher management
     Route::apiResource('teachers', TeachersController::class);
@@ -41,6 +43,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('classes/{id}/restore', [ClassesController::class, 'restore']);
 
     Route::apiResource('user-roles', UserRoleController::class);
+    Route::post('user-roles/{id}/restore', [UserRoleController::class, 'restore']);
 
     Route::apiResource('class-histories', ClassHistoriesController::class);
     Route::post('class-histories/{id}/restore', [ClassHistoriesController::class, 'restore']);

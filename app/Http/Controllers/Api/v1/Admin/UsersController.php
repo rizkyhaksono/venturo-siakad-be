@@ -104,6 +104,31 @@ class UsersController extends Controller
   }
 
   /**
+   * Change role of authenticated user
+   *
+   * @param UserRequest $request
+   */
+  public function changeRole(UserRequest $request)
+  {
+    try {
+      $user = UsersModel::findOrFail($request->user()->id);
+      $user->role = $request->input('role');
+      $user->save();
+
+      return response()->success([
+        'message' => 'User role updated successfully',
+        'user' => $user,
+      ], 200);
+    } catch (Exception $e) {
+      return response()->failed([
+        'status' => 'error',
+        'message' => 'Failed to update user role',
+        'error' => $e->getMessage(),
+      ], 500);
+    }
+  }
+
+  /**
    * Delete authenticated user account
    *
    * @param UserRequest $request
@@ -121,6 +146,30 @@ class UsersController extends Controller
       return response()->failed([
         'status' => 'error',
         'message' => 'Failed to delete user account',
+        'error' => $e->getMessage(),
+      ], 500);
+    }
+  }
+
+  /**
+   * Restore a soft-deleted user account
+   *
+   * @param string $id
+   */
+  public function restore(string $id)
+  {
+    try {
+      $user = UsersModel::withTrashed()->findOrFail($id);
+      $user->restore();
+
+      return response()->success([
+        'message' => 'User account restored successfully',
+        'user' => $user,
+      ], 200);
+    } catch (Exception $e) {
+      return response()->failed([
+        'status' => 'error',
+        'message' => 'Failed to restore user account',
         'error' => $e->getMessage(),
       ], 500);
     }
