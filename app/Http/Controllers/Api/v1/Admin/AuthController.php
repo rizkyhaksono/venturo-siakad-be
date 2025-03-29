@@ -118,18 +118,6 @@ class AuthController extends Controller
   }
 
   /**
-   * Get authenticated user details
-   *
-   * @param Request $request
-   */
-  public function me(Request $request)
-  {
-    return response()->success([
-      'user' => $request->user(),
-    ], 200);
-  }
-
-  /**
    * Generate a unique student number
    *
    * @return string

@@ -12,6 +12,9 @@ use App\Http\Controllers\Api\v1\Admin\{
     StudyYearController,
     SubjectHoursController,
     SubjectSchedulesController,
+    SubjectsController,
+    UsersController,
+    TeachersController
 };
 
 // Public routes
@@ -20,8 +23,15 @@ Route::post('login', [AuthController::class, 'login']);
 
 // Protected admin routes
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // Auth management
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::get('me', [AuthController::class, 'me']);
+
+    // User management
+    Route::get('users/me', [UsersController::class, 'me']);
+    Route::apiResource('users', UsersController::class);
+
+    // Teacher management
+    Route::apiResource('teachers', TeachersController::class);
 
     // Registration management
     Route::put('registrations/{id}', [RegistrationController::class, 'updateRegistrationStatus']);
@@ -49,4 +59,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     Route::apiResource('subject-schedules', SubjectSchedulesController::class);
     Route::post('subject-schedules/{id}/restore', [SubjectSchedulesController::class, 'restore']);
+
+    Route::apiResource('subjects', SubjectsController::class);
+    Route::post('subjects/{id}/restore', [SubjectsController::class, 'restore']);
 });
