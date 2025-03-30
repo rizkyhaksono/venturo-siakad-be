@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\v1\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,11 @@ Route::fallback(function () {
  */
 
 Route::prefix('v1')->group(function () {
+    // Public Routes
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
     // Admin Routes
     Route::prefix('admin')->group(function () {
         require __DIR__ . '/api/v1/admin.php';

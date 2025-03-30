@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\Admin\{
-    AuthController,
     ClassesController,
     UserRoleController,
     RegistrationController,
@@ -17,15 +16,8 @@ use App\Http\Controllers\Api\v1\Admin\{
     TeachersController
 };
 
-// Public routes
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
-
 // Protected admin routes
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    // Auth management
-    Route::post('logout', [AuthController::class, 'logout']);
-
     // User management
     Route::get('users/me', [UsersController::class, 'me']);
     Route::apiResource('users', UsersController::class);
