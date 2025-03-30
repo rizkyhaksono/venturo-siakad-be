@@ -24,15 +24,16 @@ class ClassHistoriesRequest extends FormRequest
     $rules = [
       'student_id' => ['required', 'string', 'max:255'],
       'class_id' => ['required', 'string', 'max:255'],
-      'study_year_id' => ['required', 'string', 'exists:study_years,id'],
-      'previous_status' => ['required', 'string', 'max:255'],
-      'new_status' => ['required', 'string', 'max:255'],
+      'study_year_id' => ['required', 'string', 'exists:m_study_years,id'],
+      'previous_status' => ['required', 'string', 'max:255', 'in:entered,promoted,transferred'],
+      'new_status' => ['required', 'string', 'max:255', 'in:entered,promoted,transferred'],
       'entry_date' => ['required', 'date'],
     ];
 
     if ($this->method() === 'PUT' || $this->method() === 'PATCH') {
-      $rules['name'] = ['sometimes', 'string', 'max:255'];
-      $rules['study_year_id'] = ['sometimes', 'string', 'exists:study_years,id'];
+      foreach ($rules as $field => $validations) {
+        $rules[$field] = array_merge(['sometimes'], $validations);
+      }
     }
 
     return $rules;
@@ -61,5 +62,14 @@ class ClassHistoriesRequest extends FormRequest
       'entry_date.required' => 'The entry date is required.',
       'entry_date.date' => 'The entry date must be a date.',
     ];
+  }
+
+  public function prepareForValidation()
+  {
+    if ($this->has('entry_date')) {
+      $this->merge([
+        'entry_date' => date('Y-m-d', strtotime($this->entry_date))
+      ]);
+    }
   }
 }

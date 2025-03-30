@@ -24,13 +24,13 @@ class ClassesRequest extends FormRequest
   {
     $rules = [
       'name' => ['required', 'string', 'max:255'],
-      'study_year_id' => ['required', 'string', 'exists:study_years,id'],
+      'study_year_id' => ['required', 'string', 'exists:m_study_years,id'],
     ];
 
     // Adjust rules based on whether it's a create or update request
     if ($this->method() === 'PUT' || $this->method() === 'PATCH') {
       $rules['name'] = ['sometimes', 'string', 'max:255'];
-      $rules['study_year_id'] = ['sometimes', 'string', 'exists:study_years,id'];
+      $rules['study_year_id'] = ['sometimes', 'string', 'exists:m_study_years,id'];
     }
 
     return $rules;

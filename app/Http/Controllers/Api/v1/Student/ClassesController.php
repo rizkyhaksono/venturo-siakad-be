@@ -9,6 +9,7 @@ class ClassesController extends Controller
 {
   /**
    * Display a listing of classes assigned to the authenticated student.
+   * Only for authenticated students who have been assigned to a class.
    */
   public function index()
   {
@@ -19,8 +20,7 @@ class ClassesController extends Controller
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })
-        ->latest()
-        ->paginate(10);
+        ->get();
 
       return response()->success([
         'status' => 'success',
@@ -37,6 +37,9 @@ class ClassesController extends Controller
 
   /**
    * Display the specified class.
+   * Only for authenticated students who have been assigned to a class.
+   * This method retrieves the class details for the authenticated student.
+   * @param string $id The ID of the class to retrieve.
    */
   public function show(string $id)
   {
@@ -47,14 +50,7 @@ class ClassesController extends Controller
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })
-        ->find($id);
-
-      if (!$class) {
-        return response()->failed([
-          'status' => 'failed',
-          'message' => 'Kelas tidak ditemukan',
-        ], 404);
-      }
+        ->findOrFail($id);
 
       return response()->success([
         'status' => 'success',

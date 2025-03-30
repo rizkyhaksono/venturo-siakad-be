@@ -20,7 +20,9 @@ class ClassHistoriesModel extends Model
         'student_id',
         'class_id',
         'study_year_id',
-        'previous_status'
+        'previous_status',
+        'new_status',
+        'entry_date'
     ];
 
     public function student(): BelongsTo

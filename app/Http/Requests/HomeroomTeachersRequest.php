@@ -24,14 +24,14 @@ class HomeroomTeachersRequest extends FormRequest
     $rules = [
       'teacher_id' => ['required', 'string', 'exists:teachers,id'],
       'class_id' => ['required', 'string', 'exists:classes,id'],
-      'study_year_id' => ['required', 'string', 'exists:study_years,id'],
+      'study_year_id' => ['required', 'string', 'exists:m_study_years,id'],
       'semester' => ['required', 'string', 'in:1,2'],
     ];
 
     if ($this->method() === 'PUT' || $this->method() === 'PATCH') {
       $rules['teacher_id'] = ['sometimes', 'string', 'exists:teachers,id'];
       $rules['class_id'] = ['sometimes', 'string', 'exists:classes,id'];
-      $rules['study_year_id'] = ['sometimes', 'string', 'exists:study_years,id'];
+      $rules['study_year_id'] = ['sometimes', 'string', 'exists:m_study_years,id'];
       $rules['semester'] = ['sometimes', 'string', 'in:1,2'];
     }
 
