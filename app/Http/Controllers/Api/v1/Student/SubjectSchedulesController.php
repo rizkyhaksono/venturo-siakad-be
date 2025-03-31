@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SubjectSchedulesRequest;
 use App\Models\SubjectSchedulesModel;
 use App\Models\StudentModel;
 use Exception;
@@ -13,7 +12,8 @@ class SubjectSchedulesController extends Controller
   /**
    * Display a listing of the resource.
    * Only for authenticated students who have been assigned to a class.
-   * This method retrieves the subject schedules for the authenticated student.
+   * This method retrieves the subject schedules for the authenticated student,
+   * relations with teacher, homeroom teacher, and subject hour are included.
    */
   public function index()
   {
