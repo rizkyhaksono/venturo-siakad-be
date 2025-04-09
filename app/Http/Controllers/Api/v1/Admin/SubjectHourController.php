@@ -108,7 +108,7 @@ class SubjectHourController extends Controller
   public function destroy(SubjectHourModel $subjectHours)
   {
     try {
-      $subjectHours->delete();
+      $subjectHours->deleteOrFail();
 
       return response()->success([
         'status' => 'success',

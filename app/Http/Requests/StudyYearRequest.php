@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SubjectRequest extends FormRequest
+class StudyYearRequest extends FormRequest
 {
   public $validator;
 
@@ -22,10 +22,8 @@ class SubjectRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'name' => ['required', 'string', 'max:255'],
-      'study_year_id' => ['required', 'uuid', 'exists:m_study_year,id'],
-      'class_id' => ['required', 'uuid', 'exists:m_class,id'],
-      'teacher_id' => ['required', 'uuid', 'exists:m_teacher,id'],
+      'year' => ['required', 'string', 'max:255'],
+      'semester' => ['required', 'string', 'max:255'],
     ];
   }
 }

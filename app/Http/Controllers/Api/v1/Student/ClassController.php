@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassModel;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClassController extends Controller
 {
@@ -14,7 +15,16 @@ class ClassController extends Controller
   public function index()
   {
     try {
-      $studentId = auth()->user()->student->id;
+      $user = auth()->user();
+
+      if (!$user || !$user->student) {
+        return response()->failed([
+          'status' => 'error',
+          'message' => 'User is not associated with a student account',
+        ], 403);
+      }
+
+      $studentId = $user->student->id;
 
       $classes = ClassModel::with(['studyYear'])
         ->whereHas('classHistories', function ($query) use ($studentId) {
@@ -44,7 +54,16 @@ class ClassController extends Controller
   public function show(string $id)
   {
     try {
-      $studentId = auth()->user()->student->id;
+      $user = auth()->user();
+
+      if (!$user || !$user->student) {
+        return response()->failed([
+          'status' => 'error',
+          'message' => 'User is not associated with a student account',
+        ], 403);
+      }
+
+      $studentId = $user->student->id;
 
       $class = ClassModel::with(['studyYear'])
         ->whereHas('classHistories', function ($query) use ($studentId) {
@@ -56,6 +75,11 @@ class ClassController extends Controller
         'status' => 'success',
         'data' => $class,
       ]);
+    } catch (ModelNotFoundException $e) {
+      return response()->failed([
+        'status' => 'error',
+        'message' => 'Class not found or not accessible',
+      ], 404);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',

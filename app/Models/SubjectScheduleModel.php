@@ -19,7 +19,8 @@ class SubjectScheduleModel extends Model
     'class_id',
     'subject_id',
     'teacher_id',
-    'subject_hour_id'
+    'subject_hour_id',
+    'day'
   ];
 
   public function class(): BelongsTo
