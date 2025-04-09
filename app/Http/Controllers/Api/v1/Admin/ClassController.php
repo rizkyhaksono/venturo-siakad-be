@@ -9,6 +9,9 @@ use Exception;
 
 class ClassController extends Controller
 {
+  /**
+   * Display a listing of the resources.   
+   */
   public function index()
   {
     $classes = ClassModel::with(['studyYear'])
@@ -17,6 +20,12 @@ class ClassController extends Controller
     return response()->json($classes, 200);
   }
 
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \App\Http\Requests\ClassRequest  $request
+   * @return \Illuminate\Http\Response
+   */
   public function store(ClassRequest $request)
   {
     try {
@@ -27,11 +36,24 @@ class ClassController extends Controller
     }
   }
 
+  /**
+   * Display the specified resource.
+   *
+   * @param  \App\Models\ClassModel  $class
+   * @return \Illuminate\Http\Response
+   */
   public function show(ClassModel $class)
   {
     return response()->json($class, 200);
   }
 
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \App\Http\Requests\ClassRequest  $request
+   * @param  \App\Models\ClassModel  $class
+   * @return \Illuminate\Http\Response
+   */
   public function update(ClassRequest $request, ClassModel $class)
   {
     try {
@@ -42,6 +64,12 @@ class ClassController extends Controller
     }
   }
 
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  \App\Models\ClassModel  $class
+   * @return \Illuminate\Http\Response
+   */
   public function destroy(ClassModel $class)
   {
     try {
