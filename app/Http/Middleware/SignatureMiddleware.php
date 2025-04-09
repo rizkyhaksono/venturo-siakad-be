@@ -16,7 +16,7 @@ class SignatureMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (! empty($request->header('signature'))) {
-            $privateKey = file_get_contents(storage_path().'/auth/private.pem');
+            $privateKey = file_get_contents(storage_path() . '/auth/private.pem');
             if (openssl_private_decrypt(base64_decode($request->header('signature')), $decrypted, $privateKey)) {
                 if (json_encode($request->all()) != $decrypted) {
                     return response()->failed(['Data tidak valid']);
