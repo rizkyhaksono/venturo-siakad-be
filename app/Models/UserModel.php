@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserModel extends Authenticatable implements CrudInterface, JWTSubject
 {
@@ -54,7 +56,7 @@ class UserModel extends Authenticatable implements CrudInterface, JWTSubject
      */
     public function role()
     {
-        return $this->hasOne(RoleModel::class, 'id', 'm_user_roles_id');
+        return $this->hasOne(UserRoleModel::class, 'id', 'm_user_roles_id');
     }
 
     /**
@@ -123,15 +125,21 @@ class UserModel extends Authenticatable implements CrudInterface, JWTSubject
         $user = $this->query();
 
         if (! empty($filter['name'])) {
-            $user->where('name', 'LIKE', '%'.$filter['name'].'%');
+            $user->where('name', 'LIKE', '%' . $filter['name'] . '%');
         }
 
         if (! empty($filter['email'])) {
-            $user->where('email', 'LIKE', '%'.$filter['email'].'%');
+            $user->where('email', 'LIKE', '%' . $filter['email'] . '%');
         }
 
         $total = $user->count();
-        $list = $user->skip($skip)->take($itemPerPage)->orderByRaw($sort)->get();
+        $list = $user;
+
+        if (!empty($sort)) {
+            $list = $list->orderByRaw($sort);
+        }
+
+        $list = $list->skip($skip)->take($itemPerPage)->get();
 
         return [
             'total' => $total,
@@ -147,5 +155,20 @@ class UserModel extends Authenticatable implements CrudInterface, JWTSubject
     public function store(array $payload)
     {
         return $this->create($payload);
+    }
+
+    public function userRole(): BelongsTo
+    {
+        return $this->belongsTo(UserRoleModel::class, 'role', 'id');
+    }
+
+    public function student(): HasOne
+    {
+        return $this->hasOne(StudentModel::class, 'user_id', 'id');
+    }
+
+    public function teacher(): HasOne
+    {
+        return $this->hasOne(TeacherModel::class, 'user_id', 'id');
     }
 }

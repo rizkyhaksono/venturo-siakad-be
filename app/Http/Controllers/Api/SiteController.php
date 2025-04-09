@@ -9,8 +9,8 @@ class SiteController extends Controller
     public function index()
     {
         return response()->success([
-            'name' => 'wahyu agung tribawono',
-            'email' => 'wahyuagung26@gmail.com',
+            'name' => 'Muhammad Rizky Haksono',
+            'email' => 'mrizkyhaksono@gmail.com',
         ], 'success get data');
     }
 }

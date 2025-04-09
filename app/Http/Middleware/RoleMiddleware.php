@@ -8,6 +8,7 @@ use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Http\Middleware\BaseMiddleware;
+use App\Models\UserRoleModel;
 
 class RoleMiddleware extends BaseMiddleware
 {
@@ -25,12 +26,40 @@ class RoleMiddleware extends BaseMiddleware
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
+            $userRole = UserRoleModel::where('id', $user->m_user_roles_id)->first();
 
-            // Cek jika user tidak mempunyai akses, tolak request ke endpoint yg diminta
-            if (! $user->isHasRole($roles)) {
-                return response()->failed(['Anda tidak memiliki credential untuk mengakses data ini'], 403);
+            if (! $userRole) {
+                return response()->failed(['User role tidak ditemukan'], 403);
             }
 
+            $roleName = strtolower($userRole->name);
+
+            if (!in_array($roleName, ['admin', 'teacher', 'student'])) {
+                return response()->json([
+                    'status_code' => 403,
+                    'errors' => ['Role tidak diizinkan'],
+                    'settings' => []
+                ], 403);
+            }
+
+            if ($roleName === 'admin') {
+                return $next($request);
+            } elseif ($roleName === 'teacher') {
+                return $next($request);
+            } elseif ($roleName === 'student') {
+                return $next($request);
+            } else {
+                return response()->json([
+                    'status_code' => 403,
+                    'errors' => ['Role tidak diizinkan'],
+                    'settings' => []
+                ], 403);
+            }
+
+            // Cek jika user tidak mempunyai akses, tolak request ke endpoint yg diminta
+            if (!$user->isHasRole($roles)) {
+                return response()->failed(['Anda tidak memiliki credential untuk mengakses data ini'], 403);
+            }
         } catch (Exception $e) {
             if ($e instanceof TokenInvalidException) {
                 return response()->failed(['Token yang anda gunakan tidak valid'], 403);

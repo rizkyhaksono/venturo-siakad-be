@@ -52,7 +52,7 @@ class JwtMiddleware extends BaseMiddleware
             } elseif ($e instanceof TokenExpiredException) {
                 return response()->failed(['Token anda telah kadaluarsa, silahkan login ulang'], 403);
             } else {
-                return response()->failed(['Silahkan login terlebih dahulu. '.$e->getMessage()], 403);
+                return response()->failed(['Silahkan login terlebih dahulu. ' . $e->getMessage()], 403);
             }
         }
 
