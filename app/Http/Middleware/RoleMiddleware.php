@@ -33,6 +33,7 @@ class RoleMiddleware extends BaseMiddleware
             }
 
             $roleName = strtolower($userRole->name);
+            $requiredRoles = explode('|', $roles);
 
             if (!in_array($roleName, ['admin', 'teacher', 'student'])) {
                 return response()->json([
@@ -42,24 +43,15 @@ class RoleMiddleware extends BaseMiddleware
                 ], 403);
             }
 
-            if ($roleName === 'admin') {
-                return $next($request);
-            } elseif ($roleName === 'teacher') {
-                return $next($request);
-            } elseif ($roleName === 'student') {
-                return $next($request);
-            } else {
+            if (!in_array($roleName, $requiredRoles)) {
                 return response()->json([
                     'status_code' => 403,
-                    'errors' => ['Role tidak diizinkan'],
+                    'errors' => ['Anda tidak memiliki akses untuk fitur ini'],
                     'settings' => []
                 ], 403);
             }
 
-            // Cek jika user tidak mempunyai akses, tolak request ke endpoint yg diminta
-            if (!$user->isHasRole($roles)) {
-                return response()->failed(['Anda tidak memiliki credential untuk mengakses data ini'], 403);
-            }
+            return $next($request);
         } catch (Exception $e) {
             if ($e instanceof TokenInvalidException) {
                 return response()->failed(['Token yang anda gunakan tidak valid'], 403);

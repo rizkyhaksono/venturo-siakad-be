@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('m_registration', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('student_id');
+            $table->uuid('user_id');
             $table->string('status')->comment('pending, accepted, rejected');
             $table->timestamps();
             $table->softDeletes();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
 
-            $table->foreign('student_id')->references('id')->on('m_student')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('m_user')->onDelete('cascade');
         });
     }
 

@@ -17,12 +17,22 @@ class RegistrationModel extends Model
   protected $keyType = 'string';
 
   protected $fillable = [
-    'student_id',
+    'user_id',
     'status'
   ];
 
+  public function user(): BelongsTo
+  {
+    return $this->belongsTo(UserModel::class, 'user_id', 'id');
+  }
+
   public function student(): BelongsTo
   {
-    return $this->belongsTo(StudentModel::class, 'student_id', 'id');
+    return $this->belongsTo(StudentModel::class, 'user_id', 'id');
+  }
+
+  public function teacher(): BelongsTo
+  {
+    return $this->belongsTo(TeacherModel::class, 'user_id', 'id');
   }
 }
