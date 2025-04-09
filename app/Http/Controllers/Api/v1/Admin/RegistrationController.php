@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\RegistrationsModel;
-use App\Models\StudentsModel;
+use App\Models\RegistrationModel;
+use App\Models\StudentModel;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
@@ -31,8 +31,8 @@ class RegistrationController extends Controller
         ], 400);
       }
 
-      $registration = RegistrationsModel::findOrFail($registrationId);
-      $student = StudentsModel::findOrFail($registration->student_id);
+      $registration = RegistrationModel::findOrFail($registrationId);
+      $student = StudentModel::findOrFail($registration->student_id);
 
       if (!$registration->status || !$student->status) {
         return response()->failed([

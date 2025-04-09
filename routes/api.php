@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SiteController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\v1\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,26 @@ use App\Http\Controllers\Api\v1\AuthController;
 |
 */
 
+Route::prefix('v1')->group(function () {
+    Route::get('/', [SiteController::class, 'index']);
+
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/auth/profile', [AuthController::class, 'profile'])->middleware(['auth.api']);
+
+    Route::prefix('admin')->group(function () {
+        require __DIR__ . '/api/v1/admin.php';
+    });
+
+    Route::prefix('student')->group(function () {
+        require __DIR__ . '/api/v1/student.php';
+    });
+
+    Route::prefix('teacher')->group(function () {
+        require __DIR__ . '/api/v1/teacher.php';
+    });
+});
+
 Route::get('/', function () {
     return response()->failed(['Endpoint yang anda minta tidak tersedia']);
 });
@@ -24,33 +45,4 @@ Route::get('/', function () {
  */
 Route::fallback(function () {
     return response()->failed(['Endpoint yang anda minta tidak tersedia']);
-});
-
-/**
- * @OA\Info(
- *     version="1.0.0",
- *     title="Siakad API Documentation"
- * )
- */
-
-Route::prefix('v1')->group(function () {
-    // Public Routes
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-    // Admin Routes
-    Route::prefix('admin')->group(function () {
-        require __DIR__ . '/api/v1/admin.php';
-    });
-
-    // Student Routes
-    Route::prefix('student')->group(function () {
-        require __DIR__ . '/api/v1/student.php';
-    });
-
-    // Teacher Routes
-    Route::prefix('teacher')->group(function () {
-        require __DIR__ . '/api/v1/teacher.php';
-    });
 });

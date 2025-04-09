@@ -2,146 +2,121 @@
 
 namespace App\Http\Controllers\Api\v1\Admin;
 
+use App\Helpers\User\RoleHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRoleRequest;
-use App\Models\UserRoleModel;
-use Exception;
+// use App\Http\Requests\Role\RoleRequest;
+use App\Http\Resources\RoleResource;
+use Illuminate\Http\Request;
 
 class UserRoleController extends Controller
 {
-  /**
-   * Display a listing of user roles.
-   */
-  public function index()
-  {
-    try {
-      $userRoles = UserRoleModel::with(['users'])
-        ->latest()
-        ->paginate(10);
+  private $roleHelper;
 
-      return response()->success([
-        'status' => 'success',
-        'data' => $userRoles,
-      ], 200);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to retrieve user roles',
-        'error' => $e->getMessage(),
-      ], 500);
-    }
+  public function __construct()
+  {
+    $this->roleHelper = new RoleHelper;
   }
 
   /**
-   * Store a newly created user role.
+   * Delete data role
+   *
+   * @author Wahyu Agung <wahyuagung26@email.com>
+   *
+   * @param  mixed  $id
    */
-  public function store(UserRoleRequest $request)
+  public function destroy($id)
   {
-    try {
-      $validated = $request->validated();
-      $userRole = UserRoleModel::create($validated);
+    $role = $this->roleHelper->delete($id);
 
-      return response()->success([
-        'status' => 'success',
-        'message' => 'User role created successfully',
-        'data' => $userRole->load('roles'),
-      ], 201);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to create user role',
-        'error' => $e->getMessage(),
-      ], 500);
+    if (! $role) {
+      return response()->failed(['Mohon maaf role tidak ditemukan']);
     }
+
+    return response()->success($role, 'Role berhasil dihapus');
   }
 
   /**
-   * Display the specified user role.
+   * Mengambil data role dilengkapi dengan pagination
+   *
+   * @author Wahyu Agung <wahyuagung26@email.com>
    */
-  public function show(string $id)
+  public function index(Request $request)
   {
-    try {
-      $userRole = UserRoleModel::with(['users'])->findOrFail($id);
+    $filter = [
+      'name' => $request->name ?? '',
+    ];
+    $roles = $this->roleHelper->getAll($filter, $request->page ?? 1, $request->per_page ?? 25, $request->sort ?? '');
 
-      return response()->success([
-        'status' => 'success',
-        'data' => $userRole,
-      ], 200);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to retrieve user role',
-        'error' => $e->getMessage(),
-      ], 500);
-    }
+    return response()->success([
+      'list' => is_array($roles['data'] ?? null) ? $roles['data'] : [],
+    ]);
   }
 
   /**
-   * Update the specified user role.
+   * Menampilkan role secara spesifik dari tabel user_role
+   *
+   * @author Wahyu Agung <wahyuagung26@email.com>
+   *
+   * @param  mixed  $id
    */
-  public function update(UserRoleRequest $request, string $id)
+  public function show($id)
   {
-    try {
-      $validated = $request->validated();
-      $userRole = UserRoleModel::findOrFail($id);
-      $userRole->update($validated);
+    $role = $this->roleHelper->getById($id);
 
-      return response()->success([
-        'status' => 'success',
-        'message' => 'User role updated successfully',
-        'data' => $userRole->load('roles'),
-      ], 200);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to update user role',
-        'error' => $e->getMessage(),
-      ], 500);
+    if (! ($role['status'])) {
+      return response()->failed(['Data role tidak ditemukan'], 404);
     }
+
+    return response()->success(new RoleResource($role['data']));
   }
 
   /**
-   * Remove the specified user role.
+   * Membuat data role baru & disimpan ke tabel user_role
+   *
    */
-  public function destroy(string $id)
+  public function store(Request $request)
   {
-    try {
-      $userRole = UserRoleModel::findOrFail($id);
-      $userRole->delete();
+    $request->validate([
+      'name' => 'required|string|max:255',
+      'access' => 'required|array',
+    ]);
 
-      return response()->success([
-        'status' => 'success',
-        'message' => 'User role deleted successfully',
-      ], 200);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to delete user role',
-        'error' => $e->getMessage(),
-      ], 500);
+    $payload = $request->only(['name', 'access']);
+    $payload['access'] = implode(', ', $payload['access']);
+
+    $role = $this->roleHelper->create($payload);
+    if (! $role['status']) {
+      return response()->failed($role['error']);
     }
+
+    return response()->success(new RoleResource($role['data']), 'Role berhasil ditambahkan');
   }
 
   /**
-   * Restore a soft-deleted user role.
+   * Mengubah data role di tabel user_role
+   *
    */
-  public function restore(string $id)
+  public function update(Request $request, $id)
   {
-    try {
-      $userRole = UserRoleModel::withTrashed()->findOrFail($id);
-      $userRole->restore();
+    $request->validate([
+      'name' => 'required|string|max:255',
+      'access' => 'required|array',
+    ]);
 
-      return response()->success([
-        'status' => 'success',
-        'message' => 'User role restored successfully',
-        'data' => $userRole->load('roles'),
-      ], 200);
-    } catch (Exception $e) {
-      return response()->failed([
-        'status' => 'error',
-        'message' => 'Failed to restore user role',
-        'error' => $e->getMessage(),
-      ], 500);
+    $payload = $request->only(['name', 'access']);
+
+    if (is_string($payload['access'][0])) {
+      $payload['access'] = explode(', ', $payload['access'][0]);
     }
+
+    $payload['access'] = implode(', ', $payload['access']);
+
+    $role = $this->roleHelper->update($payload, $id);
+
+    if (!$role['status']) {
+      return response()->failed($role['error'] ?? 'Failed to update role');
+    }
+
+    return response()->success(new RoleResource($role['data']), 'Role berhasil diubah');
   }
 }

@@ -3,135 +3,144 @@
 namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StudyYearRequest;
-use App\Models\StudyYearModel;
+use App\Http\Requests\SubjectRequest;
+use App\Models\SubjectModel;
 use Exception;
 
-class StudyYearController extends Controller
+class SubjectController extends Controller
 {
   /**
-   * Display a listing of the study years.
+   * Display a listing of the resource.
    */
   public function index()
   {
     try {
-      $studyYears = StudyYearModel::latest()->paginate(10);
+      $subjects = SubjectModel::all();
 
       return response()->success([
         'status' => 'success',
-        'data' => $studyYears,
+        'data' => $subjects,
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to retrieve study years',
+        'message' => 'Failed to retrieve subjects',
         'error' => $e->getMessage(),
       ], 500);
     }
   }
 
   /**
-   * Store a newly created study year in storage.
+   * Store a newly created resource in storage.
+   *
    */
-  public function store(StudyYearRequest $request)
+  public function store(SubjectRequest $request)
   {
     try {
-      $studyYear = StudyYearModel::create($request->validated());
+      $subject = SubjectModel::create($request->validated());
 
       return response()->success([
         'status' => 'success',
-        'message' => 'Study year created successfully',
-        'data' => $studyYear,
+        'message' => 'Subject created successfully',
+        'data' => $subject,
       ], 201);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to create study year',
+        'message' => 'Failed to create subject',
         'error' => $e->getMessage(),
       ], 500);
     }
   }
 
   /**
-   * Display the specified study year.
+   * Display the specified resource.
+   *
    */
-  public function show(StudyYearModel $studyYear)
+  public function show(string $id)
   {
     try {
+      $subject = SubjectModel::findOrFail($id);
+
       return response()->success([
         'status' => 'success',
-        'data' => $studyYear,
+        'data' => $subject,
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to retrieve study year',
+        'message' => 'Failed to retrieve subject',
         'error' => $e->getMessage(),
       ], 500);
     }
   }
 
   /**
-   * Update the specified study year in storage.
+   * Update the specified resource in storage.
+   *
    */
-  public function update(StudyYearRequest $request, StudyYearModel $studyYear)
+  public function update(SubjectRequest $request, string $id)
   {
     try {
-      $studyYear->update($request->validated());
+      $subject = SubjectModel::findOrFail($id);
+      $subject->update($request->validated());
 
       return response()->success([
         'status' => 'success',
-        'message' => 'Study year updated successfully',
-        'data' => $studyYear,
+        'message' => 'Subject updated successfully',
+        'data' => $subject,
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to update study year',
+        'message' => 'Failed to update subject',
         'error' => $e->getMessage(),
       ], 500);
     }
   }
 
   /**
-   * Remove the specified study year from storage.
+   * Remove the specified resource from storage.
+   *
    */
-  public function destroy(StudyYearModel $studyYear)
+  public function destroy(string $id)
   {
     try {
-      $studyYear->delete();
+      $subject = SubjectModel::findOrFail($id);
+      $subject->delete();
 
       return response()->success([
         'status' => 'success',
-        'message' => 'Study year deleted successfully',
+        'message' => 'Subject deleted successfully',
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to delete study year',
+        'message' => 'Failed to delete subject',
         'error' => $e->getMessage(),
       ], 500);
     }
   }
 
   /**
-   * Restore the specified study year.
+   * Restore the specified resource from storage.
+   *
    */
-  public function restore($id)
+  public function restore(string $id)
   {
     try {
-      $studyYear = StudyYearModel::withTrashed()->findOrFail($id);
-      $studyYear->restore();
+      $subject = SubjectModel::withTrashed()->findOrFail($id);
+      $subject->restore();
 
       return response()->success([
         'status' => 'success',
-        'message' => 'Study year restored successfully',
-        'data' => $studyYear,
+        'message' => 'Subject restored successfully',
+        'data' => $subject,
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
         'status' => 'error',
-        'message' => 'Failed to restore study year',
+        'message' => 'Failed to restore subject',
         'error' => $e->getMessage(),
       ], 500);
     }

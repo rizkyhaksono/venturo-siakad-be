@@ -3,33 +3,36 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Exception;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Http\Middleware\BaseMiddleware;
 use App\Models\UserRoleModel;
-use Illuminate\Http\Request;
-use Illuminate\Auth\AuthenticationException;
 
-class RoleMiddleware
+class RoleMiddleware extends BaseMiddleware
 {
-    public function handle(Request $request, Closure $next, $roles)
+    /**
+     * Middleware untuk mengecek permission user ketika melakukan request ke salah satu routes
+     * Pada saat membuat sebuah routes, tambahkan hak akses apa yang boleh mengakses endpoint ini
+     *
+     * Contohnya : Route::get('/users', [UserController::class, 'index'])->middleware(['auth.api','role:user_view']);
+     *
+     * Routes di atas hanya dapat diakses jika request dilengkapi dengan token JWT dan user memiliki akses "user_view"
+     *
+     * @author Wahyu Agung <wahyuagung26@email.com>
+     */
+    public function handle($request, Closure $next, $roles)
     {
         try {
-            $user = $request->user();
+            $user = JWTAuth::parseToken()->authenticate();
+            $userRole = UserRoleModel::where('id', $user->m_user_roles_id)->first();
 
-            if (!$user) {
-                throw new AuthenticationException('Unauthenticated.');
+            if (! $userRole) {
+                return response()->failed(['User role tidak ditemukan'], 403);
             }
 
-            $userRole = $user->role;
-            $roleModel = UserRoleModel::find($userRole);
-
-            if (!$roleModel) {
-                return response()->json([
-                    'status_code' => 403,
-                    'errors' => ['Role tidak ditemukan'],
-                    'settings' => []
-                ], 403);
-            }
-
-            $roleName = strtolower($roleModel->name);
+            $roleName = strtolower($userRole->name);
 
             if (!in_array($roleName, ['admin', 'teacher', 'student'])) {
                 return response()->json([
@@ -41,30 +44,32 @@ class RoleMiddleware
 
             if ($roleName === 'admin') {
                 return $next($request);
-            }
-
-            $allowedAccess = array_map('trim', explode(',', $roleModel->access));
-            if (in_array($roles, $allowedAccess)) {
+            } elseif ($roleName === 'teacher') {
                 return $next($request);
+            } elseif ($roleName === 'student') {
+                return $next($request);
+            } else {
+                return response()->json([
+                    'status_code' => 403,
+                    'errors' => ['Role tidak diizinkan'],
+                    'settings' => []
+                ], 403);
             }
 
-            return response()->json([
-                'status_code' => 403,
-                'errors' => ['Anda tidak memiliki credential untuk mengakses data ini'],
-                'settings' => []
-            ], 403);
-        } catch (AuthenticationException $e) {
-            return response()->json([
-                'status_code' => 401,
-                'errors' => ['Token tidak valid atau telah kadaluarsa'],
-                'settings' => []
-            ], 401);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status_code' => 500,
-                'errors' => [$e->getMessage()],
-                'settings' => []
-            ], 500);
+            // Cek jika user tidak mempunyai akses, tolak request ke endpoint yg diminta
+            if (!$user->isHasRole($roles)) {
+                return response()->failed(['Anda tidak memiliki credential untuk mengakses data ini'], 403);
+            }
+        } catch (Exception $e) {
+            if ($e instanceof TokenInvalidException) {
+                return response()->failed(['Token yang anda gunakan tidak valid'], 403);
+            } elseif ($e instanceof TokenExpiredException) {
+                return response()->failed(['Token anda telah kadaluarsa, silahkan login ulang'], 403);
+            } else {
+                return response()->failed($e->getMessage());
+            }
         }
+
+        return $next($request);
     }
 }

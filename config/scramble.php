@@ -1,7 +1,6 @@
 <?php
 
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
-use Dedoc\Scramble\Support\Generator\SecurityScheme;
 
 return [
     /*
@@ -25,7 +24,7 @@ return [
         /*
          * API version.
          */
-        'version' => env('API_VERSION', '1.0.0'),
+        'version' => env('API_VERSION', '1.0.1'),
 
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
@@ -66,6 +65,14 @@ return [
          * Use to fetch the credential policy for the Try It feature. Options are: omit, include (default), and same-origin
          */
         'try_it_credentials_policy' => 'include',
+
+        /*
+         * There are three layouts for Elements:
+         * - sidebar - (Elements default) Three-column design with a sidebar that can be resized.
+         * - responsive - Like sidebar, except at small screen sizes it collapses the sidebar into a drawer that can be toggled open.
+         * - stacked - Everything in a single column, making integrations with existing websites that have their own sidebar or other columns already.
+         */
+        'layout' => 'responsive',
     ],
 
     /*

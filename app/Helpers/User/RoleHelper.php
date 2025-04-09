@@ -3,7 +3,7 @@
 namespace App\Helpers\User;
 
 use App\Helpers\Venturo;
-use App\Models\RoleModel;
+use App\Models\UserRoleModel;
 use Throwable;
 
 class RoleHelper extends Venturo
@@ -12,7 +12,7 @@ class RoleHelper extends Venturo
 
     public function __construct()
     {
-        $this->roleModel = new RoleModel;
+        $this->roleModel = new UserRoleModel;
     }
 
     public function getAll(array $filter, int $page = 1, int $itemPerPage = 0, string $sort = '')
