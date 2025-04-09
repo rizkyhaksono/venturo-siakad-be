@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassesModel;
+use App\Models\ClassModel;
 
-class ClassesController extends Controller
+class ClassController extends Controller
 {
   /**
    * Display a listing of classes assigned to the authenticated student.
@@ -16,7 +16,7 @@ class ClassesController extends Controller
     try {
       $studentId = auth()->user()->student->id;
 
-      $classes = ClassesModel::with(['studyYear'])
+      $classes = ClassModel::with(['studyYear'])
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })
@@ -46,7 +46,7 @@ class ClassesController extends Controller
     try {
       $studentId = auth()->user()->student->id;
 
-      $class = ClassesModel::with(['studyYear'])
+      $class = ClassModel::with(['studyYear'])
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })

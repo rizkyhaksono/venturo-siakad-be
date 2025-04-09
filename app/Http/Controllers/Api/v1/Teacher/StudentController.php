@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StudentsRequest;
-use App\Models\StudentsModel;
+use App\Http\Requests\StudentRequest;
+use App\Models\StudentModel;
 
-class StudentsController extends Controller
+class StudentController extends Controller
 {
   /**
    * Display a listing of the students.
    */
   public function index()
   {
-    $students = StudentsModel::with(['class', 'studyYear'])->get();
+    $students = StudentModel::with(['class', 'studyYear'])->get();
 
     return response()->success([
       'status' => true,
@@ -24,12 +24,12 @@ class StudentsController extends Controller
   /**
    * Store a newly created student.
    */
-  public function store(StudentsRequest $request)
+  public function store(StudentRequest $request)
   {
     $validated = $request->validated();
     $validated['created_by'] = auth()->id();
 
-    $student = StudentsModel::create($validated);
+    $student = StudentModel::create($validated);
 
     return response()->success([
       'status' => true,

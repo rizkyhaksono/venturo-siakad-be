@@ -4,7 +4,7 @@ namespace  App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
 
-class SubjectsController extends Controller
+class SubjectController extends Controller
 {
   /**
    * This method is used to retrieve the list of subjects for the authenticated teacher.

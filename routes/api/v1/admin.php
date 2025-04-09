@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\v1\Admin\{
   ClassHistoryController,
   HomeroomTeacherController,
   RegistrationController,
-  StudentsController,
+  StudentController,
   StudyYearController,
   SubjectController,
   SubjectHourController,
@@ -23,7 +23,7 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::apiResource('classes', ClassController::class);
   Route::apiResource('class-histories', ClassHistoryController::class);
   Route::apiResource('homeroom-teachers', HomeroomTeacherController::class);
-  Route::apiResource('students', StudentsController::class);
+  Route::apiResource('students', StudentController::class);
   Route::apiResource('study-years', StudyYearController::class);
   Route::apiResource('subjects', SubjectController::class);
   Route::apiResource('subject-hours', SubjectHourController::class);

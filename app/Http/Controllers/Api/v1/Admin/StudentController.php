@@ -7,7 +7,7 @@ use App\Http\Requests\StudentRequest;
 use App\Models\StudentModel;
 use Exception;
 
-class StudentsController extends Controller
+class StudentController extends Controller
 {
   /**
    * Display a listing of students.
