@@ -9,6 +9,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Helpers\User\UserHelper;
 use App\Models\RegistrationModel;
+use App\Models\UserRoleModel;
 
 class AuthController extends Controller
 {
@@ -42,7 +43,12 @@ class AuthController extends Controller
             return response()->failed($login['error'], 422);
         }
 
-        return response()->success($login['data']);
+        $user = auth()->user();
+        $role = UserRoleModel::where('id', $user->m_user_roles_id)->first();
+
+        return response()->success(
+            array_merge($login['data'], ['role' => $role->name])
+        );
     }
 
     /**
