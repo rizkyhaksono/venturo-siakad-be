@@ -35,11 +35,6 @@ class StudentModel extends Model
     return $this->belongsTo(UserModel::class, 'user_id', 'id');
   }
 
-  public function registrations(): HasMany
-  {
-    return $this->hasMany(RegistrationModel::class, 'student_id', 'id');
-  }
-
   public function classHistories(): HasMany
   {
     return $this->hasMany(ClassHistoryModel::class, 'student_id', 'id');

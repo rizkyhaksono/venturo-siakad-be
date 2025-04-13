@@ -15,7 +15,7 @@ class StudentController extends Controller
   public function index()
   {
     try {
-      $students = StudentModel::with(['user', 'registrations', 'classHistories'])
+      $students = StudentModel::with(['user', 'classHistories'])
         ->latest()
         ->paginate(10);
 
@@ -44,7 +44,7 @@ class StudentController extends Controller
       return response()->success([
         'status' => 'success',
         'message' => 'Student created successfully',
-        'data' => $student->load(['user', 'registrations', 'classHistories']),
+        'data' => $student->load(['user', 'classHistories']),
       ], 201);
     } catch (Exception $e) {
       return response()->failed([
@@ -61,7 +61,7 @@ class StudentController extends Controller
   public function show(string $id)
   {
     try {
-      $student = StudentModel::with(['user', 'registrations', 'classHistories'])->findOrFail($id);
+      $student = StudentModel::with(['user',  'classHistories'])->findOrFail($id);
 
       return response()->success([
         'status' => 'success',
@@ -89,7 +89,7 @@ class StudentController extends Controller
       return response()->success([
         'status' => 'success',
         'message' => 'Student updated successfully',
-        'data' => $student->load(['user', 'registrations', 'classHistories']),
+        'data' => $student->load(['user', 'classHistories']),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -134,7 +134,7 @@ class StudentController extends Controller
       return response()->success([
         'status' => 'success',
         'message' => 'Student restored successfully',
-        'data' => $student->load(['user', 'registrations', 'classHistories']),
+        'data' => $student->load(['user', 'classHistories']),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
