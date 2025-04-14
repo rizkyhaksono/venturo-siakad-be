@@ -105,11 +105,9 @@ class UserRoleController extends Controller
 
     $payload = $request->only(['name', 'access']);
 
-    if (is_string($payload['access'][0])) {
-      $payload['access'] = explode(', ', $payload['access'][0]);
-    }
-
-    $payload['access'] = implode(', ', $payload['access']);
+    $payload['access'] = is_array($payload['access'])
+      ? implode(', ', $payload['access'])
+      : $payload['access'];
 
     $role = $this->roleHelper->update($payload, $id);
 
