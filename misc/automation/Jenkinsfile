@@ -69,47 +69,17 @@ pipeline {
   }
   stages {
     stage("BUILD DOCKER IMAGE") {
-            when {
-                expression {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine whether to execute the stage based on the branch name
-                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
-                }
-            }
             steps {
                 script {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine the appropriate image tags based on the branch name
-                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
-
-                    echo "========BUILD DOCKER IMAGE FROM BRANCH ${branchName.toUpperCase()}========"
+                    echo "========BUILD DOCKER IMAGE ========"
                     sh "docker build -f ./misc/docker/Dockerfile --label ${CONTAINER_LABEL} -t $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags} ."
                 }
             }
         }
         stage("PUSH IMAGE TO REGISTRY"){
-            when {
-                expression {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine whether to execute the stage based on the branch name
-                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
-                }
-            }
             steps{
                 script {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine the appropriate image tags based on the branch name
-                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
-
-                    echo "========PUSH DOCKER IMAGE TO REGISTRY FROM BRANCH ${branchName.toUpperCase()}========"
+                    echo "========PUSH DOCKER IMAGE TO REGISTRY ========"
                     sh "echo $REGISTRY_CREDENTIALS_PSW | docker login -u $REGISTRY_CREDENTIALS_USR --password-stdin $REGISTRY_ADDRESS"
                     sh "docker push $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}"
                 }
@@ -117,86 +87,24 @@ pipeline {
             }
         }
         stage("CLEAN UP LOCAL IMAGE") {
-            when {
-                expression {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine whether to execute the stage based on the branch name
-                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
-                }
-            }
             steps {
                 script {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine the appropriate image tags based on the branch name
-                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
-                    echo "========CLEAN UP LOCAL IMAGE FROM BRANCH ${branchName.toUpperCase()}========"
+                    echo "========CLEAN UP LOCAL IMAGE========"
                     sh "docker rmi $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}"
                 }
 
             }
         }
         stage("DEPLOY TO SERVER") {
-            when {
-                expression {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine whether to execute the stage based on the branch name
-                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
-                }
-            }
             steps {
                 script {
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME
-
-                    // Determine the appropriate image tags based on the branch name
-                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
-                    def containerName = branchName == env.GIT_PRODUCTION_BRANCH ? "${CONTAINER_PRODUCTION_NAME}" : "${CONTAINER_STAGING_NAME}"
-                        echo "========DEPLOY TO PRODUCTION SERVER FROM BRANCH ${branchName.toUpperCase()}========"
-                        sshagent(['ssh-noc-ct-122-api']) {
+                        echo "========DEPLOY TO PRODUCTION SERVER========"
+                        sshagent(['']) {
                             sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'echo $REGISTRY_CREDENTIALS_PSW | docker login -u $REGISTRY_CREDENTIALS_USR --password-stdin $REGISTRY_ADDRESS'"
-                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker container rm -f ${containerName} || true'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker container rm -f venturo-siakad-be || true'"
                             sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
-                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker image prune --filter 'label=${CONTAINER_LABEL}' -f'"
-                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker run -d --name ${containerName} -p ${PRODUCTION_PORT}:80 \
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker run -d --name venturo-siakad-be -p 8002:8002 \
                             --restart=always \
-                            --network nginx-network \
-                            -v /home/key_api:/home/key_api \
-                            -e APP_NAME=${APP_NAME} \
-                            -e APP_ENV=${APP_ENV} \
-                            -e APP_KEY=${APP_KEY} \
-                            -e APP_DEBUG=${APP_DEBUG} \
-                            -e APP_URL=${APP_URL} \
-                            -e APP_TIMEZONE=${APP_TIMEZONE} \
-                            -e AUTH_GUARD=${AUTH_GUARD} \
-                            -e JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY} \
-                            -e JWT_VERIFY=true \
-                            -e DB_CONNECTION=${DB_CONNECTION} \
-                            -e DB_HOST=${DB_HOST} \
-                            -e DB_PORT=${DB_PORT} \
-                            -e DB_DATABASE=${DB_DATABASE} \
-                            -e DB_USERNAME=${DB_USERNAME} \
-                            -e DB_PASSWORD=${DB_PASSWORD} \
-                            -e ILAB_API_URL=${ILAB_API_URL} \
-                            -e REDIS_HOST=${REDIS_HOST} \
-                            -e REDIS_PASSWORD=${REDIS_PASSWORD} \
-                            -e REDIS_PORT=${REDIS_PORT} \
-                            -e RABBITMQ_QUEUE=${RABBITMQ_QUEUE} \
-                            -e RABBITMQ_HOST=${RABBITMQ_HOST} \
-                            -e RABBITMQ_PORT=${RABBITMQ_PORT} \
-                            -e RABBITMQ_USER=${RABBITMQ_USER} \
-                            -e RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} \
-                            -e AWS_ENDPOINT=${AWS_ENDPOINT} \
-                            -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                            -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                            -e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
-                            -e AWS_BUCKET=${AWS_BUCKET} \
-                            -e AWS_BUCKET_DEV=${AWS_BUCKET_DEV} \
                             -e AWS_URL=${AWS_URL} \
                             $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
                             sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker logout $REGISTRY_ADDRESS'"
