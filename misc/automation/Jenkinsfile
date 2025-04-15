@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     echo "========BUILD DOCKER IMAGE ========"
-                    sh "docker build -f ./misc/docker/Dockerfile --label ${CONTAINER_LABEL} -t $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags} ."
+                    sh "docker build -f ./misc/docker/Dockerfile -t $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags} ."
                 }
             }
         }
