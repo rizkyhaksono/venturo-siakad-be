@@ -44,7 +44,7 @@ pipeline {
     REDIS_CLIENT = credentials('REDIS_CLIENT')
     REDIS_HOST = credentials('REDIS_HOST')
     REDIS_PASSWORD = credentials('REDIS_PASSWORD')
-    REDIST_PORT = credentials('REDIST_PORT')
+    REDIS_PORT = credentials('REDIS_PORT')
 
     MAIL_MAILER = credentials('MAIL_MAILER')
     MAIL_HOST = credentials('MAIL_HOST')
