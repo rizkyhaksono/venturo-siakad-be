@@ -1,0 +1,269 @@
+pipeline {
+  agent any
+  environment  {
+    APP_NAME = credential('APP_NAME')
+    APP_ENV = credential('APP_ENV')
+    APP_KEY = credential('APP_KEY')
+    APP_DEBUG = credential('APP_DEBUG')
+    APP_TIMEZONE = credential('APP_TIMEZONE')
+
+    APP_LOCALE = credential('APP_LOCALE')
+    APP_FALLBACK_LOCALE = credential('APP_FALLBACK_LOCALE')
+    APP_FAKER_LOCALE = credential('APP_FAKER_LOCALE')
+
+    APP_MAINTENCANCE_DRIVER = credential('APP_MAINTENCANCE_DRIVER')
+    APP_MAINTENANCE_STORE = credential('APP_MAINTENANCE_STORE')
+    
+    BCRYPT_ROUNDS = credential('BCRYPT_ROUNDS')
+
+    LOG_CHANNEL = credential('LOG_CHANNEL')
+    LOG_STACK = credential('LOG_STACK')
+    LOG_DEPRECATIONS_CHANNEL = credential('LOG_DEPRECATIONS_CHANNEL')
+    LOG_LEVEL = credential('LOG_LEVEL')
+
+    DB_CONNECTION = credential('DB_CONNECTION')
+    DB_HOST = credential('DB_HOST')
+    DB_PORT = credential('DB_PORT')
+    DB_DATABASE = credential('DB_DATABASE')
+    DB_USERNAME = credential('DB_USERNAME')
+    DB_PASSWORD = credential('DB_PASSWORD')
+
+    SESSION_DRIVER = credential('SESSION_DRIVER')
+    SESSION_LIFETIME = credential('SESSION_LIFETIME')
+    SESSION_ENCRYPT = credential('SESSION_ENCRYPT')
+    SESSION_PATH = credential('SESSION_PATH')
+    SESSION_DOMAIN = credential('SESSION_DOMAIN')
+
+    BROADCAST_CONNECTION = credential('BROADCAST_CONNECTION')
+    FILESYSTEM_DISK = credential('FILESYSTEM_DISK')
+    QUEUE_CONNECTION = credential('QUEUE_CONNECTION')
+    
+    CACHE_STORE = credential('CACHE_STORE')
+    CACHE_PREFIX = credential('CACHE_PREFIX')
+
+    MEMCACHED_HOST = credential('MEMCACHED_HOST')
+
+    REDIS_CLIENT = credential('REDIS_CLIENT')
+    REDIS_HOST = credential('REDIS_HOST')
+    REDIS_PASSWORD = credential('REDIS_PASSWORD')
+    REDIST_PORT = credential('REDIST_PORT')
+
+    MAIL_MAILER = credential('MAIL_MAILER')
+    MAIL_HOST = credential('MAIL_HOST')
+    MAIL_PORT = credential('MAIL_PORT')
+    MAIL_USERNAME = credential('MAIL_USERNAME')
+    MAIL_PASSWORD = credential('MAIL_PASSWORD')
+    MAIL_ENCRYPTION = credential('MAIL_ENCRYPTION')
+    MAIL_FROM_ADDRESS = credential('MAIL_FROM_ADDRESS')
+    MAIL_FROM_NAME = credential('MAIL_FROM_NAME')
+    
+    AWS_ACCESS_KEY_ID = credential('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = credential('AWS_SECRET_ACCESS_KEY')
+    AWS_DEFAULT_REGION = credential('AWS_DEFAULT_REGION')
+    AWS_BUCKET = credential('AWS_BUCKET')
+    AWS_USE_PATH_STYLE_ENDPOINT = credential('AWS_USE_PATH_STYLE_ENDPOINT')
+    
+    VITE_APP_NAME = credential('VITE_APP_NAME')
+
+    JWT_SECRET = credential('JWT_SECRET')
+    JWT_ALGO = credential('JWT_ALGO')
+    JWT_SHOW_BLACKLIST_EXCEPTION = credential('JWT_SHOW_BLACKLIST_EXCEPTION')
+  }
+  stages {
+    stage("BUILD DOCKER IMAGE") {
+            when {
+                expression {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine whether to execute the stage based on the branch name
+                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
+                }
+            }
+            steps {
+                script {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine the appropriate image tags based on the branch name
+                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
+
+                    echo "========BUILD DOCKER IMAGE FROM BRANCH ${branchName.toUpperCase()}========"
+                    if (branchName == env.GIT_PRODUCTION_BRANCH) {
+                        sh "docker build -f ./misc/docker/prod.Dockerfile --label ${CONTAINER_LABEL} -t $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags} ."
+                    } else {
+                        sh "docker build -f ./misc/docker/stage.Dockerfile --label ${CONTAINER_LABEL} -t $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags} ."
+                    }
+                }
+            }
+        }
+        stage("PUSH IMAGE TO REGISTRY"){
+            when {
+                expression {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine whether to execute the stage based on the branch name
+                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
+                }
+            }
+            steps{
+                script {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine the appropriate image tags based on the branch name
+                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
+
+                    echo "========PUSH DOCKER IMAGE TO REGISTRY FROM BRANCH ${branchName.toUpperCase()}========"
+                    sh "echo $REGISTRY_CREDENTIALS_PSW | docker login -u $REGISTRY_CREDENTIALS_USR --password-stdin $REGISTRY_ADDRESS"
+                    sh "docker push $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}"
+                }
+
+            }
+        }
+        stage("CLEAN UP LOCAL IMAGE") {
+            when {
+                expression {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine whether to execute the stage based on the branch name
+                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
+                }
+            }
+            steps {
+                script {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine the appropriate image tags based on the branch name
+                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
+                    echo "========CLEAN UP LOCAL IMAGE FROM BRANCH ${branchName.toUpperCase()}========"
+                    sh "docker rmi $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}"
+                }
+
+            }
+        }
+        stage("DEPLOY TO SERVER") {
+            when {
+                expression {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine whether to execute the stage based on the branch name
+                    return branchName == env.GIT_PRODUCTION_BRANCH || branchName == env.GIT_STAGING_BRANCH
+                }
+            }
+            steps {
+                script {
+                    // Get the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Determine the appropriate image tags based on the branch name
+                    def imageTags = branchName == env.GIT_PRODUCTION_BRANCH ? "${IMAGE_TAGS_PRODUCTION}" : "${IMAGE_TAGS_STAGING}"
+                    def containerName = branchName == env.GIT_PRODUCTION_BRANCH ? "${CONTAINER_PRODUCTION_NAME}" : "${CONTAINER_STAGING_NAME}"
+                    if (branchName == env.GIT_PRODUCTION_BRANCH) {
+                        echo "========DEPLOY TO PRODUCTION SERVER FROM BRANCH ${branchName.toUpperCase()}========"
+                        // SSH into the remote server and perform the deployment
+                        sshagent(['ssh-noc-ct-122-api']) {
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'echo $REGISTRY_CREDENTIALS_PSW | docker login -u $REGISTRY_CREDENTIALS_USR --password-stdin $REGISTRY_ADDRESS'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker container rm -f ${containerName} || true'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker image prune --filter 'label=${CONTAINER_LABEL}' -f'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker run -d --name ${containerName} -p ${PRODUCTION_PORT}:80 \
+                            --restart=always \
+                            --network nginx-network \
+                            -v /home/key_api:/home/key_api \
+                            -e APP_NAME=${APP_NAME} \
+                            -e APP_ENV=${APP_ENV} \
+                            -e APP_KEY=${APP_KEY} \
+                            -e APP_DEBUG=${APP_DEBUG} \
+                            -e APP_URL=${APP_URL} \
+                            -e APP_TIMEZONE=${APP_TIMEZONE} \
+                            -e AUTH_GUARD=${AUTH_GUARD} \
+                            -e JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY} \
+                            -e JWT_VERIFY=true \
+                            -e DB_CONNECTION=${DB_CONNECTION} \
+                            -e DB_HOST=${DB_HOST} \
+                            -e DB_PORT=${DB_PORT} \
+                            -e DB_DATABASE=${DB_DATABASE} \
+                            -e DB_USERNAME=${DB_USERNAME} \
+                            -e DB_PASSWORD=${DB_PASSWORD} \
+                            -e ILAB_API_URL=${ILAB_API_URL} \
+                            -e REDIS_HOST=${REDIS_HOST} \
+                            -e REDIS_PASSWORD=${REDIS_PASSWORD} \
+                            -e REDIS_PORT=${REDIS_PORT} \
+                            -e RABBITMQ_QUEUE=${RABBITMQ_QUEUE} \
+                            -e RABBITMQ_HOST=${RABBITMQ_HOST} \
+                            -e RABBITMQ_PORT=${RABBITMQ_PORT} \
+                            -e RABBITMQ_USER=${RABBITMQ_USER} \
+                            -e RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} \
+                            -e AWS_ENDPOINT=${AWS_ENDPOINT} \
+                            -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                            -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                            -e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+                            -e AWS_BUCKET=${AWS_BUCKET} \
+                            -e AWS_BUCKET_DEV=${AWS_BUCKET_DEV} \
+                            -e AWS_URL=${AWS_URL} \
+                            $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker logout $REGISTRY_ADDRESS'"
+                        }
+                    } else {
+                        echo "========DEPLOY TO STAGING SERVER FROM BRANCH ${branchName.toUpperCase()}========"
+                        // SSH into the remote server and perform the deployment
+                        sshagent(['ssh-noc-ct-122-api']) {
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'echo $REGISTRY_CREDENTIALS_PSW | docker login -u $REGISTRY_CREDENTIALS_USR --password-stdin $REGISTRY_ADDRESS'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker container rm -f ${containerName} || true'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker image prune --filter 'label=${CONTAINER_LABEL}' -f'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker run -d --name ${containerName} -p ${STAGING_PORT}:80 \
+                            --restart=always \
+                            --network nginx-network \
+                            -v /home/key_api:/home/key_api \
+                            -e APP_NAME=${APP_NAME} \
+                            -e APP_ENV=${APP_ENV_STAGING} \
+                            -e APP_KEY=${APP_KEY} \
+                            -e APP_DEBUG=true \
+                            -e APP_URL=${APP_URL_STAGING} \
+                            -e APP_TIMEZONE=${APP_TIMEZONE} \
+                            -e AUTH_GUARD=${AUTH_GUARD} \
+                            -e JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY_DEV} \
+                            -e JWT_VERIFY=false \
+                            -e DB_CONNECTION=${DB_CONNECTION} \
+                            -e DB_HOST=${DB_HOST} \
+                            -e DB_PORT=${DB_PORT} \
+                            -e DB_DATABASE=${DB_DATABASE_STAGING} \
+                            -e DB_USERNAME=${DB_USERNAME} \
+                            -e DB_PASSWORD=${DB_PASSWORD} \
+                            -e ILAB_API_URL=${ILAB_API_URL_STAGING} \
+                            -e REDIS_HOST=${REDIS_HOST} \
+                            -e REDIS_PASSWORD=${REDIS_PASSWORD} \
+                            -e REDIS_PORT=${REDIS_PORT_DEV} \
+                            -e RABBITMQ_QUEUE=${RABBITMQ_QUEUE_DEV} \
+                            -e RABBITMQ_HOST=${RABBITMQ_HOST} \
+                            -e RABBITMQ_PORT=${RABBITMQ_PORT} \
+                            -e RABBITMQ_USER=${RABBITMQ_USER} \
+                            -e RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} \
+                            -e AWS_ENDPOINT=${AWS_ENDPOINT} \
+                            -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                            -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                            -e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+                            -e AWS_BUCKET=${AWS_BUCKET} \
+                            -e AWS_BUCKET_DEV=${AWS_BUCKET_DEV} \
+                            -e AWS_URL=${AWS_URL_DEV} \
+                            $REGISTRY_IMAGE_STARTER_NAME/${IMAGE_NAME}:${imageTags}'"
+                            sh "ssh ${REMOTE_USER}@${REMOTE_SERVER} 'docker logout $REGISTRY_ADDRESS'"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post{
+      always{
+          echo "========always========"
+          sh 'docker logout $REGISTRY_ADDRESS'
+      }
+  }
+}
