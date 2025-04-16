@@ -84,12 +84,13 @@ class SubjectHourController extends Controller
   public function update(SubjectHourRequest $request, SubjectHourModel $subjectHours)
   {
     try {
-      $subjectHours->update($request->validated());
+      $subjectHours->fill($request->validated());
+      $subjectHours->save();
 
       return response()->success([
         'status' => 'success',
         'message' => 'Subject hours updated successfully',
-        'data' => $subjectHours,
+        'data' => $subjectHours->fresh(),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -105,10 +106,28 @@ class SubjectHourController extends Controller
    *
    * @param SubjectHourModel $subjectHours
    */
-  public function destroy(SubjectHourModel $subjectHours)
+  public function destroy($id)
   {
     try {
-      $subjectHours->deleteOrFail();
+      $subjectHours = SubjectHourModel::find($id);
+
+      if (!$subjectHours) {
+        return response()->failed([
+          'status' => 'error',
+          'message' => 'Subject hours not found',
+        ], 404);
+      }
+
+      if ($subjectHours->subjectSchedules && $subjectHours->subjectSchedules->count() > 0) {
+        return response()->failed([
+          'status' => 'error',
+          'message' => 'Cannot delete subject hours that are in use',
+        ], 400);
+      }
+
+      $subjectHours->deleted_by = auth()->id();
+      $subjectHours->save();
+      $subjectHours->delete();
 
       return response()->success([
         'status' => 'success',

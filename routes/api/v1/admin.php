@@ -26,7 +26,10 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::apiResource('students', StudentController::class);
   Route::apiResource('study-years', StudyYearController::class);
   Route::apiResource('subjects', SubjectController::class);
+
   Route::apiResource('subject-hours', SubjectHourController::class);
+  Route::get('subject-hours/restore/{id}', [SubjectHourController::class, 'restore']);
+
   Route::apiResource('subject-schedules', SubjectScheduleController::class);
   Route::apiResource('teachers', TeacherController::class);
   Route::apiResource('users', UserController::class);
