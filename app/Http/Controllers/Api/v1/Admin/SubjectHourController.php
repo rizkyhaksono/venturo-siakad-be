@@ -78,13 +78,15 @@ class SubjectHourController extends Controller
   /**
    * Update the specified resource in storage.
    *
+   * @param int $id
    * @param SubjectHourRequest $request
-   * @param SubjectHourModel $subjectHours
    */
-  public function update(SubjectHourRequest $request, SubjectHourModel $subjectHours)
+  public function update($id, SubjectHourRequest $request)
   {
     try {
-      $subjectHours->fill($request->validated());
+      $subjectHours = SubjectHourModel::findOrFail($id);
+      $subjectHours->update($request->validated());
+      $subjectHours->updated_by = auth()->id();
       $subjectHours->save();
 
       return response()->success([
