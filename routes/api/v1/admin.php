@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\v1\Admin\{
 };
 
 Route::middleware(['auth.api', 'role:admin'])->group(function () {
-  Route::apiResource('registrations', RegistrationController::class);
+  Route::get('registrations', [RegistrationController::class, 'index']);
   Route::put('registration/{id}', [RegistrationController::class, 'updateRegistrationStatus']);
 
   Route::apiResource('classes', ClassController::class);
