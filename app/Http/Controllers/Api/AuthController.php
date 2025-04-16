@@ -46,6 +46,14 @@ class AuthController extends Controller
         $user = auth()->user();
         $role = UserRoleModel::where('id', $user->m_user_roles_id)->first();
 
+        $registration = RegistrationModel::where('user_id', $user->id)->first();
+        if ($registration->status == 'rejected') {
+            return response()->failed('Akun anda ditolak, silahkan hubungi admin', 422);
+        }
+        if ($registration->status == 'pending') {
+            return response()->failed('Akun anda sedang dalam proses verifikasi, silahkan hubungi admin', 422);
+        }
+
         return response()->success(
             array_merge($login['data'], ['role' => $role->name])
         );

@@ -61,37 +61,51 @@ class RegistrationController extends Controller
       $registration = RegistrationModel::findOrFail($registrationId);
 
       // Check if the user exists in the respective role table
-      if ($request->assigned_to === 'student') {
-        $exists = StudentModel::where('user_id', $registration->user_id)->exists();
-        if (!$exists) {
-          $user = $registration->user;
-          $studentNumber = 'STU-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+      if ($request->status === 'accepted') {
+        if ($request->assigned_to === 'student') {
+          $exists = StudentModel::where('user_id', $registration->user_id)->exists();
+          if (!$exists) {
+            $user = $registration->user;
+            $studentNumber = 'STU-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
 
-          StudentModel::create([
-            'id' => Uuid::uuid4()->toString(),
-            'user_id' => $registration->user_id,
-            'name' => $user->name,
-            'student_number' => $studentNumber,
-            'class' => 'Unassigned',
-            'status' => $request->status,
-            'created_by' => Auth::id()
-          ]);
+            StudentModel::create([
+              'id' => Uuid::uuid4()->toString(),
+              'user_id' => $registration->user_id,
+              'name' => $user->name,
+              'student_number' => $studentNumber,
+              'class' => 'Unassigned',
+              'status' => $request->status,
+              'created_by' => Auth::id()
+            ]);
+          }
+        } elseif ($request->assigned_to === 'teacher') {
+          $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
+          if (!$exists) {
+            $user = $registration->user;
+            $employeeNumber = 'TCH-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+
+            TeacherModel::create([
+              'id' => Uuid::uuid4()->toString(),
+              'user_id' => $registration->user_id,
+              'name' => $user->name,
+              'employee_number' => $employeeNumber,
+              'subject' => 'Unassigned',
+              'status' => $request->status,
+              'created_by' => Auth::id()
+            ]);
+          }
         }
-      } elseif ($request->assigned_to === 'teacher') {
-        $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
-        if (!$exists) {
-          $user = $registration->user;
-          $employeeNumber = 'TCH-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
-
-          TeacherModel::create([
-            'id' => Uuid::uuid4()->toString(),
-            'user_id' => $registration->user_id,
-            'name' => $user->name,
-            'employee_number' => $employeeNumber,
-            'subject' => 'Unassigned',
-            'status' => $request->status,
-            'created_by' => Auth::id()
-          ]);
+      } else {
+        if ($request->assigned_to === 'student') {
+          $exists = StudentModel::where('user_id', $registration->user_id)->exists();
+          if ($exists) {
+            StudentModel::where('user_id', $registration->user_id)->delete();
+          }
+        } elseif ($request->assigned_to === 'teacher') {
+          $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
+          if ($exists) {
+            TeacherModel::where('user_id', $registration->user_id)->delete();
+          }
         }
       }
 
