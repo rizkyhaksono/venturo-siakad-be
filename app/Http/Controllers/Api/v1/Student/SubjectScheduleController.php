@@ -18,10 +18,7 @@ class SubjectScheduleController extends Controller
   public function index()
   {
     try {
-      $student = StudentModel::with(['class'])->where('user_id', auth()->user()->id)->firstOrFail();
-      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])
-        ->where('class_id', $student->class->id)
-        ->get();
+      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->get();
 
       return response()->success([
         'status' => 'success',
@@ -43,10 +40,7 @@ class SubjectScheduleController extends Controller
   public function show(string $id)
   {
     try {
-      $student = StudentModel::with(['class'])->where('user_id', auth()->user()->id)->firstOrFail();
-      $subjectSchedule = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])
-        ->where('class_id', $student->class->id)
-        ->findOrFail($id);
+      $subjectSchedule = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->findOrFail($id);
 
       return response()->success([
         'status' => 'success',
