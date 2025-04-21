@@ -3,6 +3,7 @@
 namespace  App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\SubjectModel;
 
 class SubjectController extends Controller
 {
@@ -25,9 +26,7 @@ class SubjectController extends Controller
       $teacherId = $user->teacher->id;
 
       $subjects = SubjectModel::with(['studyYear'])
-        ->whereHas('classHistories', function ($query) use ($teacherId) {
-          $query->where('teacher_id', $teacherId);
-        })
+        ->where('teacher_id', $teacherId)
         ->get();
 
       return response()->success([

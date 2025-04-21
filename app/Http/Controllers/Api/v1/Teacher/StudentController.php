@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
 use App\Models\StudentModel;
-use App\Models\SubjectScheduleModel;
 
 class StudentController extends Controller
 {
