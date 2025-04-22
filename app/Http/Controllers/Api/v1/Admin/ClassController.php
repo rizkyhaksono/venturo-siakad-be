@@ -5,19 +5,20 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassRequest;
 use App\Models\ClassModel;
+use App\Http\Resources\Admin\ClassResource;
 use Exception;
 
 class ClassController extends Controller
 {
   /**
-   * Display a listing of the resources.   
+   * Display a listing of the resources.
    */
   public function index()
   {
     $classes = ClassModel::with(['studyYear'])
       ->latest()
       ->paginate(10);
-    return response()->json($classes, 200);
+    return ClassResource::collection($classes);
   }
 
   /**
@@ -44,7 +45,12 @@ class ClassController extends Controller
    */
   public function show(ClassModel $class)
   {
-    return response()->json($class, 200);
+    try {
+      $class->load(['studyYear']);
+      return new ClassResource($class);
+    } catch (Exception $e) {
+      return response()->json(['error' => 'Class not found'], 404);
+    }
   }
 
   /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassHistoryRequest;
 use App\Models\ClassHistoryModel;
+use App\Http\Resources\Admin\ClassHistoryResource;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,7 +29,7 @@ class ClassHistoryController extends Controller
 
       return response()->success([
         'status' => true,
-        'data' => $classHistories
+        'data' => ClassHistoryResource::collection($classHistories)
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
       return response()->failed([
@@ -74,7 +75,7 @@ class ClassHistoryController extends Controller
 
       return response()->success([
         'status' => true,
-        'data' => $classHistory
+        'data' => new ClassHistoryResource($classHistory)
       ], Response::HTTP_OK);
     } catch (\Exception $e) {
       return response()->failed([

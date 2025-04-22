@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HomeroomTeacherRequest;
+use App\Http\Resources\Admin\HomeroomTeacherResource;
 use App\Models\HomeroomTeacherModel;
 use Exception;
 
@@ -15,13 +16,13 @@ class HomeroomTeacherController extends Controller
   public function index()
   {
     try {
-      $homeroomTeachers = HomeroomTeacherModel::with(['teacher', 'class'])
+      $homeroomTeachers = HomeroomTeacherModel::with(['teacher', 'class', 'studyYear'])
         ->latest()
         ->paginate(10);
 
       return response()->success([
         'status' => 'success',
-        'data' => $homeroomTeachers,
+        'data' => HomeroomTeacherResource::collection($homeroomTeachers),
       ]);
     } catch (Exception $e) {
       return response()->failed([
@@ -58,12 +59,15 @@ class HomeroomTeacherController extends Controller
   /**
    * Display the specified homeroom teacher.
    */
-  public function show(HomeroomTeacherModel $class)
+  public function show($id)
   {
     try {
-      return response()->success([
+      $homeroomTeacher = HomeroomTeacherModel::with(['teacher', 'class', 'studyYear'])
+        ->findOrFail($id);
+
+      return response()->json([
         'status' => 'success',
-        'data' => $class->load(['teacher', 'class']),
+        'data' => new HomeroomTeacherResource($homeroomTeacher),
       ]);
     } catch (Exception $e) {
       return response()->failed([

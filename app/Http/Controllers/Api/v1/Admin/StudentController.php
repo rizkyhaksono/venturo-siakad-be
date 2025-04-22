@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
+use App\Http\Resources\Admin\StudentResource;
 use App\Models\StudentModel;
 use Exception;
 
@@ -19,9 +20,14 @@ class StudentController extends Controller
         ->latest()
         ->paginate(10);
 
-      return response()->success([
-        'status' => 'success',
-        'data' => $students,
+      return response()->json([
+        'data' => StudentResource::collection($students),
+        'meta' => [
+          'current_page' => $students->currentPage(),
+          'last_page' => $students->lastPage(),
+          'per_page' => $students->perPage(),
+          'total' => $students->total(),
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

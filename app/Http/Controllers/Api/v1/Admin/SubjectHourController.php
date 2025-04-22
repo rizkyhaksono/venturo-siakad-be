@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectHourRequest;
+use App\Http\Resources\Admin\SubjectHourResource;
 use App\Models\SubjectHourModel;
 use Exception;
 
@@ -17,9 +18,9 @@ class SubjectHourController extends Controller
     try {
       $subjectHours = SubjectHourModel::all();
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjectHours,
+        'data' => SubjectHourResource::collection($subjectHours),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -62,9 +63,9 @@ class SubjectHourController extends Controller
   public function show(SubjectHourModel $subjectHours)
   {
     try {
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjectHours,
+        'data' => new SubjectHourResource($subjectHours),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

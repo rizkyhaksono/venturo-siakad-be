@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudyYearRequest;
+use App\Http\Resources\Admin\StudyYearResource;
 use App\Models\StudyYearModel;
 use Exception;
 
@@ -17,9 +18,15 @@ class StudyYearController extends Controller
     try {
       $studyYears = StudyYearModel::latest()->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $studyYears,
+        'data' => StudyYearResource::collection($studyYears),
+        'meta' => [
+          'current_page' => $studyYears->currentPage(),
+          'last_page' => $studyYears->lastPage(),
+          'per_page' => $studyYears->perPage(),
+          'total' => $studyYears->total(),
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -58,9 +65,9 @@ class StudyYearController extends Controller
   public function show(StudyYearModel $studyYear)
   {
     try {
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $studyYear,
+        'data' => new StudyYearResource($studyYear),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
