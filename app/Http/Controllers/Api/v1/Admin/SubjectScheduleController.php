@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectScheduleRequest;
+use App\Http\Resources\Admin\SubjectScheduleResource;
 use App\Models\SubjectScheduleModel;
 use Exception;
 
@@ -17,9 +18,9 @@ class SubjectScheduleController extends Controller
     try {
       $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->get();
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjectSchedules,
+        'data' => SubjectScheduleResource::collection($subjectSchedules),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectRequest;
+use App\Http\Resources\Admin\SubjectResource;
 use App\Models\SubjectModel;
 use Exception;
 
@@ -15,11 +16,17 @@ class SubjectController extends Controller
   public function index()
   {
     try {
-      $subjects = SubjectModel::all();
+      $subjects = SubjectModel::paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjects,
+        'data' => SubjectResource::collection($subjects),
+        'meta' => [
+          'current_page' => $subjects->currentPage(),
+          'last_page' => $subjects->lastPage(),
+          'per_page' => $subjects->perPage(),
+          'total' => $subjects->total(),
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -62,9 +69,9 @@ class SubjectController extends Controller
     try {
       $subject = SubjectModel::findOrFail($id);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subject,
+        'data' => new SubjectResource($subject),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

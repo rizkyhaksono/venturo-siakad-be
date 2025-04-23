@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TeacherRequest;
 use App\Models\TeacherModel;
+use App\Http\Resources\Admin\TeacherResource;
 use Exception;
 
 
@@ -18,9 +19,9 @@ class TeacherController extends Controller
     try {
       $teachers = TeacherModel::with(['user'])->latest()->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $teachers,
+        'data' => TeacherResource::collection($teachers),
       ]);
     } catch (Exception $e) {
       return response()->failed([
@@ -57,12 +58,14 @@ class TeacherController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(TeacherModel $teacher)
+  public function show(string $id)
   {
     try {
-      return response()->success([
+      $teacher = TeacherModel::with(['user'])->findOrFail($id);
+
+      return response()->json([
         'status' => 'success',
-        'data' => $teacher->load('user'),
+        'data' => new TeacherResource($teacher),
       ]);
     } catch (Exception $e) {
       return response()->failed([

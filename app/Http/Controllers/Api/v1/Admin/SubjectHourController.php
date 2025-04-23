@@ -16,11 +16,17 @@ class SubjectHourController extends Controller
   public function index()
   {
     try {
-      $subjectHours = SubjectHourModel::all();
+      $subjectHours = SubjectHourModel::paginate(10);
 
       return response()->json([
         'status' => 'success',
         'data' => SubjectHourResource::collection($subjectHours),
+        'meta' => [
+          'current_page' => $subjectHours->currentPage(),
+          'last_page' => $subjectHours->lastPage(),
+          'per_page' => $subjectHours->perPage(),
+          'total' => $subjectHours->total(),
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -60,9 +66,11 @@ class SubjectHourController extends Controller
    *
    * @param SubjectHourModel $subjectHours
    */
-  public function show(SubjectHourModel $subjectHours)
+  public function show(string $id)
   {
     try {
+      $subjectHours = SubjectHourModel::withTrashed()->findOrFail($id);
+
       return response()->json([
         'status' => 'success',
         'data' => new SubjectHourResource($subjectHours),
