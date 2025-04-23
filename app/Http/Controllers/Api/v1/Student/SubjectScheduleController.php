@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubjectScheduleModel;
-use App\Models\StudentModel;
+use App\Http\Resources\Student\SubjectScheduleResource;
 use Exception;
 
 class SubjectScheduleController extends Controller
@@ -18,11 +18,17 @@ class SubjectScheduleController extends Controller
   public function index()
   {
     try {
-      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->get();
+      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjectSchedules,
+        'data' => SubjectScheduleResource::collection($subjectSchedules),
+        'meta' => [
+          'current_page' => $subjectSchedules->currentPage(),
+          'last_page' => $subjectSchedules->lastPage(),
+          'per_page' => $subjectSchedules->perPage(),
+          'total' => $subjectSchedules->total(),
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
@@ -42,9 +48,9 @@ class SubjectScheduleController extends Controller
     try {
       $subjectSchedule = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->findOrFail($id);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjectSchedule,
+        'data' => new SubjectScheduleResource($subjectSchedule),
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

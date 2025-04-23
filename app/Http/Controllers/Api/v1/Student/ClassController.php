@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassModel;
+use App\Http\Resources\Student\ClassResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClassController extends Controller
@@ -30,11 +31,17 @@ class ClassController extends Controller
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })
-        ->get();
+        ->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $classes,
+        'data' => ClassResource::collection($classes),
+        'meta' => [
+          'current_page' => $classes->currentPage(),
+          'last_page' => $classes->lastPage(),
+          'per_page' => $classes->perPage(),
+          'total' => $classes->total(),
+        ],
       ]);
     } catch (Exception $e) {
       return response()->failed([
@@ -69,11 +76,12 @@ class ClassController extends Controller
         ->whereHas('classHistories', function ($query) use ($studentId) {
           $query->where('student_id', $studentId);
         })
+        ->paginate(10)
         ->findOrFail($id);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $class,
+        'data' => new ClassResource($class),
       ]);
     } catch (ModelNotFoundException $e) {
       return response()->failed([

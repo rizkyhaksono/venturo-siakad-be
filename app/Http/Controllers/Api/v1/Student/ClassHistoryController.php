@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api\v1\Student;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ClassHistoryRequest;
+use App\Http\Resources\Student\ClassHistoryResource;
 use App\Models\ClassHistoryModel;
-use Illuminate\Http\Request;
 
 class ClassHistoryController extends Controller
 {
@@ -13,7 +12,7 @@ class ClassHistoryController extends Controller
    * Display a listing of the class history for the authenticated student.
    * Where the class history includes the class name, study year, and the number of students in each class.
    */
-  public function index(Request $request)
+  public function index()
   {
     $user = auth()->user();
 
@@ -26,13 +25,13 @@ class ClassHistoryController extends Controller
 
     $studentId = $user->student->id;
 
-    $classHistories = ClassHistoryModel::with(['class.studyYear'])
+    $classHistories = ClassHistoryModel::with(['class', 'studyYear'])
       ->where('student_id', $studentId)
       ->get();
 
-    return response()->success([
+    return response()->json([
       'status' => true,
-      'data' => $classHistories,
+      'data' => ClassHistoryResource::collection($classHistories),
     ]);
   }
 }
