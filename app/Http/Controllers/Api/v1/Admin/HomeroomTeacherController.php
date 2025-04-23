@@ -20,7 +20,7 @@ class HomeroomTeacherController extends Controller
         ->latest()
         ->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
         'data' => HomeroomTeacherResource::collection($homeroomTeachers),
       ]);
