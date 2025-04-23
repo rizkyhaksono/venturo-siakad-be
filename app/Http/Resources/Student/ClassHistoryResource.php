@@ -10,7 +10,7 @@ class ClassHistoryResource extends JsonResource
   {
     return [
       'id' => $this->id,
-      'name' => $this->class->name ?? null,  // Get name from class relationship
+      'name' => $this->class->name ?? null,
       'previous_status' => $this->previous_status,
       'new_status' => $this->new_status,
       'entry_date' => $this->entry_date,

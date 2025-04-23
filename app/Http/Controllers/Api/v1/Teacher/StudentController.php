@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
+use App\Http\Resources\Teacher\StudentResource;
 use App\Models\StudentModel;
 
 class StudentController extends Controller
@@ -30,11 +31,17 @@ class StudentController extends Controller
         $query->where('teacher_id', $teacherId);
       })->with(['classHistory' => function ($query) {
         $query->latest('entry_date')->limit(1);
-      }])->get();
+      }])->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $students,
+        'data' => StudentResource::collection($students),
+        'meta' => [
+          'current_page' => $students->currentPage(),
+          'last_page' => $students->lastPage(),
+          'per_page' => $students->perPage(),
+          'total' => $students->total(),
+        ],
       ]);
     } catch (Exception $e) {
       return response()->failed([

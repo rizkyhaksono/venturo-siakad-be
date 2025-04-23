@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Teacher\ClassResource;
 use App\Models\ClassModel;
 use Exception;
 
@@ -30,11 +31,17 @@ class ClassController extends Controller
         ->whereHas('homeroomTeachers', function ($query) use ($teacherId) {
           $query->where('teacher_id', $teacherId);
         })
-        ->get();
+        ->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $classes,
+        'data' => ClassResource::collection($classes),
+        'meta' => [
+          'current_page' => $classes->currentPage(),
+          'last_page' => $classes->lastPage(),
+          'per_page' => $classes->perPage(),
+          'total' => $classes->total(),
+        ],
       ]);
     } catch (Exception $e) {
       return response()->failed([
@@ -72,9 +79,9 @@ class ClassController extends Controller
         })
         ->findOrFail($id);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $class,
+        'data' => new ClassResource($class),
       ]);
     } catch (ModelNotFoundException $e) {
       return response()->failed([

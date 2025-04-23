@@ -3,6 +3,7 @@
 namespace  App\Http\Controllers\Api\v1\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Teacher\SubjectResource;
 use App\Models\SubjectModel;
 
 class SubjectController extends Controller
@@ -27,11 +28,17 @@ class SubjectController extends Controller
 
       $subjects = SubjectModel::with(['studyYear'])
         ->where('teacher_id', $teacherId)
-        ->get();
+        ->paginate(10);
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subjects,
+        'data' => SubjectResource::collection($subjects),
+        'meta' => [
+          'current_page' => $subjects->currentPage(),
+          'last_page' => $subjects->lastPage(),
+          'per_page' => $subjects->perPage(),
+          'total' => $subjects->total(),
+        ],
       ]);
     } catch (Exception $e) {
       return response()->failed([
@@ -64,9 +71,9 @@ class SubjectController extends Controller
         ->where('id', $id)
         ->firstOrFail();
 
-      return response()->success([
+      return response()->json([
         'status' => 'success',
-        'data' => $subject,
+        'data' => new SubjectResource($subject),
       ]);
     } catch (ModelNotFoundException $e) {
       return response()->failed([
