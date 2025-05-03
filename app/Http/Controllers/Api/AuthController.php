@@ -45,13 +45,24 @@ class AuthController extends Controller
 
         $user = auth()->user();
         $role = UserRoleModel::where('id', $user->m_user_roles_id)->first();
-
         $registration = RegistrationModel::where('user_id', $user->id)->first();
+
         if ($registration->status == 'rejected') {
             return response()->failed('Akun anda ditolak, silahkan hubungi admin', 422);
         }
+
         if ($registration->status == 'pending') {
-            return response()->failed('Akun anda sedang dalam proses verifikasi, silahkan hubungi admin', 422);
+            return response()->success(
+                array_merge($login['data'], ['role' => $role->name]),
+                'Akun anda sedang dalam proses verifikasi, silahkan tunggu'
+            );
+        }
+
+        if ($registration->status == 'accepted') {
+            return response()->success(
+                array_merge($login['data'], ['role' => $role->name]),
+                'Akun anda sudah diverifikasi, silahkan login'
+            );
         }
 
         return response()->success(
@@ -67,8 +78,10 @@ class AuthController extends Controller
      * @bodyParam password string required The password. Minimum 6 characters. Example: secret123
      * @bodyParam phone_number string required The user's phone number. Example: 08123456789
      * @bodyParam photo file The user's profile picture (jpg, png, etc.)
+     *
+     * This is for student registration only.
      */
-    public function register(UserRequest $request)
+    public function registerStudent(UserRequest $request)
     {
         $payload = $request->only(['email', 'name', 'password', 'photo', 'phone_number']);
         $payload['m_user_roles_id'] = "8e403aa5-2658-4726-a44f-3b8fadff6e3a";
@@ -112,5 +125,52 @@ class AuthController extends Controller
         }
 
         return response()->success([], 'Logout Success !');
+    }
+
+    /**
+     * Send password reset link
+     * 
+     * @bodyParam email string required The email address of the user. Example: user@example.com
+     */
+    public function forgotPassword(Request $request)
+    {
+        if (isset($request->validator) && $request->validator->fails()) {
+            return response()->failed($request->validator->errors(), 422);
+        }
+
+        $response = AuthHelper::forgotPassword($request->email);
+
+        if (!$response['status']) {
+            return response()->failed($response['error'], 422);
+        }
+
+        return response()->success([], 'Password reset link has been sent to your email');
+    }
+
+    /**
+     * Reset password
+     * 
+     * @bodyParam token string required The reset token received in email. Example: 1234abcd
+     * @bodyParam email string required The email address of the user. Example: user@example.com
+     * @bodyParam password string required The new password. Example: newpassword123
+     * @bodyParam password_confirmation string required Password confirmation. Example: newpassword123
+     */
+    public function resetPassword(Request $request)
+    {
+        if (isset($request->validator) && $request->validator->fails()) {
+            return response()->failed($request->validator->errors(), 422);
+        }
+
+        $response = AuthHelper::resetPassword(
+            $request->token,
+            $request->email,
+            $request->password
+        );
+
+        if (!$response['status']) {
+            return response()->failed($response['error'], 422);
+        }
+
+        return response()->success([], 'Password has been reset successfully');
     }
 }

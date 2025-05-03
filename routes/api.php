@@ -18,10 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::get('/', [SiteController::class, 'index']);
 
-    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/register', [AuthController::class, 'registerStudent']);
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/profile', [AuthController::class, 'profile'])->middleware(['auth.api']);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
     Route::prefix('admin')->group(function () {
         require __DIR__ . '/api/v1/admin.php';

@@ -81,4 +81,86 @@ class AuthHelper extends Venturo
             ];
         }
     }
+
+    public static function forgotPassword($email)
+    {
+        try {
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                return [
+                    'status' => false,
+                    'error' => 'User not found'
+                ];
+            }
+
+            $token = Str::random(60);
+
+            DB::table('password_resets')->updateOrInsert(
+                ['email' => $email],
+                [
+                    'token' => Hash::make($token),
+                    'created_at' => now()
+                ]
+            );
+
+            // Send email with reset link
+            Mail::send('emails.reset-password', [
+                'token' => $token,
+                'email' => $email
+            ], function ($message) use ($user) {
+                $message->to($user->email);
+                $message->subject('Reset Password Notification');
+            });
+
+            return [
+                'status' => true,
+                'data' => []
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public static function resetPassword($token, $email, $password)
+    {
+        try {
+            $reset = DB::table('password_resets')
+                ->where('email', $email)
+                ->first();
+
+            if (!$reset || !Hash::check($token, $reset->token)) {
+                return [
+                    'status' => false,
+                    'error' => 'Invalid token'
+                ];
+            }
+
+            if (Carbon::parse($reset->created_at)->addMinutes(60)->isPast()) {
+                return [
+                    'status' => false,
+                    'error' => 'Token has expired'
+                ];
+            }
+
+            $user = User::where('email', $email)->first();
+            $user->password = Hash::make($password);
+            $user->save();
+
+            DB::table('password_resets')->where('email', $email)->delete();
+
+            return [
+                'status' => true,
+                'data' => []
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
 }
