@@ -36,6 +36,11 @@ class UserModel extends Authenticatable implements CrudInterface, JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'wali',
+        'pekerjaan',
+        'birth_date',
+        'address',
+        'gender',
         'password',
         'photo',
         'm_user_roles_id',

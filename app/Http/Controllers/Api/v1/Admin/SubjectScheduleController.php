@@ -16,7 +16,22 @@ class SubjectScheduleController extends Controller
   public function index()
   {
     try {
-      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])->get();
+      $dayOrder = [
+        'Monday' => 1,
+        'Tuesday' => 2,
+        'Wednesday' => 3,
+        'Thursday' => 4,
+        'Friday' => 5
+      ];
+
+      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])
+        ->get()
+        ->sortBy(function ($schedule) use ($dayOrder) {
+          $dayValue = $dayOrder[$schedule->day];
+          $hourValue = $schedule->subjectHour->start_hour;
+          return sprintf('%d%02d', $dayValue, $hourValue);
+        })
+        ->values();
 
       return response()->json([
         'status' => 'success',

@@ -23,9 +23,6 @@ class SubjectRequest extends FormRequest
   {
     return [
       'name' => ['required', 'string', 'max:255'],
-      'study_year_id' => ['required', 'uuid', 'exists:m_study_year,id'],
-      'class_id' => ['required', 'uuid', 'exists:m_class,id'],
-      'teacher_id' => ['required', 'uuid', 'exists:m_teacher,id'],
     ];
   }
 }

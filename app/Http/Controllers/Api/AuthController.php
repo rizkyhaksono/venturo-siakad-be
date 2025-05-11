@@ -83,8 +83,19 @@ class AuthController extends Controller
      */
     public function registerStudent(UserRequest $request)
     {
-        $payload = $request->only(['email', 'name', 'password', 'photo', 'phone_number']);
-        $payload['m_user_roles_id'] = "8e403aa5-2658-4726-a44f-3b8fadff6e3a";
+        $payload = $request->only([
+            'name',
+            'email',
+            'wali',
+            'pekerjaan',
+            'birth_date',
+            'address',
+            'gender',
+            'password',
+            'photo',
+            'phone_number'
+        ]);
+        $payload['m_user_roles_id'] = "c97697f8-6d31-492d-9014-efb96b668c89";
 
         $user = $this->userHelper->create($payload);
         RegistrationModel::create([
