@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_subject', function (Blueprint $table) {
+        Schema::create('m_kkm', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name');
-            $table->uuid('created_by')->nullable();
-            $table->uuid('updated_by')->nullable();
-            $table->uuid('deleted_by')->nullable();
+            $table->uuid('subject_id');
+            $table->integer('min_score');
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('subject_id')->references('id')->on('m_subject')->onDelete('cascade');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_subject');
+        Schema::dropIfExists('m_kkm');
     }
 };

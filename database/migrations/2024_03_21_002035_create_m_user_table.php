@@ -20,6 +20,16 @@ return new class extends Migration
         ->comment('Fill with name of user');
       $table->string('email', 50)
         ->comment('Fill with user email for login');
+      $table->string('wali', 50)
+        ->comment('Fill with name of user guardian');
+      $table->string('pekerjaan', 50)
+        ->comment('Fill with name of user guardian job');
+      $table->date('birth_date')
+        ->comment('Fill with user birth date');
+      $table->text('address')
+        ->comment('Fill with user address');
+      $table->string('gender')
+        ->comment('Fill with user gender');
       $table->string('password', 255)
         ->comment('Fill with user password');
       $table->string('phone_number', 25)

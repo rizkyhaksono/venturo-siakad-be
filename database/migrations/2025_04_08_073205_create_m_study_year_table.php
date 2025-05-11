@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('m_study_year', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('year')->unique();
             $table->string('semester');
+            $table->string('year');
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();

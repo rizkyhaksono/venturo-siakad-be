@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('teacher_id');
             $table->uuid('class_id');
+            $table->uuid('subject_id')->nullable();
             $table->uuid('study_year_id');
             $table->string('semester')->comment('1, 2');
             $table->timestamps();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->foreign('teacher_id')->references('id')->on('m_teacher')->onDelete('cascade');
             $table->foreign('class_id')->references('id')->on('m_class')->onDelete('cascade');
             $table->foreign('study_year_id')->references('id')->on('m_study_year')->onDelete('cascade');
+            $table->foreign('subject_id')->references('id')->on('m_subject')->onDelete('cascade');
         });
     }
 

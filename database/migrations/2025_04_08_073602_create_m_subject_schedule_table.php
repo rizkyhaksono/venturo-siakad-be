@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('class_id');
             $table->uuid('subject_id');
-            $table->uuid('teacher_id');
+            $table->uuid('teacher_id')->nullable();
             $table->uuid('subject_hour_id');
             $table->string('day')->comment('Monday, Tuesday, Wednesday, Thursday, Friday');
             $table->timestamps();

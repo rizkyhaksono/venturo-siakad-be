@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_student', function (Blueprint $table) {
+        Schema::create('m_rombel', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id')->unique();
             $table->string('name');
-            $table->string('student_number')->unique();
-            $table->string('status')->default('pending');
-            $table->uuid('created_by')->nullable();
-            $table->uuid('updated_by')->nullable();
-            $table->uuid('deleted_by')->nullable();
+            $table->uuid('class_id');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('user_id')->references('id')->on('m_user');
+            $table->foreign('class_id')->references('id')->on('m_class')->onDelete('cascade');
         });
     }
 
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_student');
+        Schema::dropIfExists('m_rombel');
     }
 };

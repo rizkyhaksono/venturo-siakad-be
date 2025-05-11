@@ -15,13 +15,15 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('jenis_biaya')->comment('Reguler, Mandiri');
-            $table->string('semester_pembayaran')->comment('1, 2');
+            $table->uuid('study_year_id');
             $table->integer('total');
             $table->timestamps();
             $table->softDeletes();
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
+
+            $table->foreign('study_year_id')->references('id')->on('m_study_year')->onDelete('cascade');
         });
     }
 

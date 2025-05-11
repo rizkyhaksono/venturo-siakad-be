@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('m_spp_history', function (Blueprint $table) {
+        Schema::create('t_spp_history', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->uuid('spp_id');
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_spp_history');
+        Schema::dropIfExists('t_spp_history');
     }
 };
