@@ -95,7 +95,7 @@ class AuthController extends Controller
             'photo',
             'phone_number'
         ]);
-        $payload['m_user_roles_id'] = "c97697f8-6d31-492d-9014-efb96b668c89";
+        $payload['m_user_roles_id'] = "a4f7717a-c788-4dda-b1c2-d8a0f9c62e5a";
 
         $user = $this->userHelper->create($payload);
         RegistrationModel::create([

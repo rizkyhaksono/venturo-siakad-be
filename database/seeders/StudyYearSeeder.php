@@ -17,6 +17,7 @@ class StudyYearSeeder extends Seeder
       [
         'id' => uuid_create(),
         'semester' => '2',
+        'year' => '2025/2026',
         'created_at' => now(),
         'updated_at' => now(),
         'deleted_at' => null,
@@ -24,6 +25,7 @@ class StudyYearSeeder extends Seeder
       [
         'id' => uuid_create(),
         'semester' => '1',
+        'year' => '2025/2026',
         'created_at' => now(),
         'updated_at' => now(),
         'deleted_at' => null,

@@ -30,7 +30,7 @@ class RegistrationController extends Controller
       ], 404);
     }
 
-    return response()->success([
+    return response()->json([
       'status' => 'success',
       'message' => 'Registration list retrieved successfully',
       'data' => $registrations
