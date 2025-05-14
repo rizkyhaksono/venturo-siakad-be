@@ -16,7 +16,7 @@ class SubjectHourController extends Controller
   public function index()
   {
     try {
-      $subjectHours = SubjectHourModel::paginate(10);
+      $subjectHours = SubjectHourModel::orderBy('start_time', 'asc')->paginate(10);
 
       return response()->json([
         'status' => 'success',
