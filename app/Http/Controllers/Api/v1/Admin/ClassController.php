@@ -16,7 +16,7 @@ class ClassController extends Controller
   public function index()
   {
     $classes = ClassModel::with(['studyYear'])
-      ->latest()
+      ->orderBy('name', 'asc')
       ->paginate(10);
     return ClassResource::collection($classes);
   }
