@@ -17,7 +17,7 @@ class TeacherController extends Controller
   public function index()
   {
     try {
-      $teachers = TeacherModel::with(['user'])->latest()->paginate(10);
+      $teachers = TeacherModel::with(['homeroomTeachers.class'])->latest()->paginate(10);
 
       return response()->json([
         'status' => 'success',

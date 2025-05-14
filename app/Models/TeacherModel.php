@@ -41,4 +41,20 @@ class TeacherModel extends Model
   {
     return $this->hasMany(HomeroomTeacherModel::class, 'teacher_id', 'id');
   }
+
+  public function assignedClassesCount()
+  {
+    return $this->homeroomTeachers()
+      ->select('class_id')
+      ->distinct()
+      ->count();
+  }
+
+  public function assignedClasses()
+  {
+    return $this->homeroomTeachers()
+      ->select('class_id')
+      ->distinct()
+      ->with('class');
+  }
 }
