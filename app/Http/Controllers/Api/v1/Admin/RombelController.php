@@ -19,8 +19,8 @@ class RombelController extends Controller
       'class',
       'studyYear',
       'teacher',
-      'subjesubjectSchedulect',
-      'student'
+      'student',
+      'subjectSchedules'
     )->get();
 
     return response()->json([
