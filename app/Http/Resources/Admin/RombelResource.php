@@ -12,9 +12,22 @@ class RombelResource extends JsonResource
     return [
       'id' => $this->id,
       'name' => $this->name,
-      "class" => [
-        "name" => $this->class->name,
-        "total_rombel" => $this->class->total_rombel,
+      'class' => [
+        'id' => $this->class->id,
+        'name' => $this->class->name,
+        'total_rombel' => $this->class->total_rombel,
+      ],
+      'study_year' => [
+        'id' => $this->studyYear->id,
+        'name' => $this->studyYear->name,
+      ],
+      'teacher' => [
+        'id' => $this->teacher->id,
+        'name' => $this->teacher->name,
+      ],
+      'subject' => [
+        'id' => $this->subject->id,
+        'name' => $this->subject->name,
       ],
       'created_at' => $this->created_at,
       'updated_at' => $this->updated_at

@@ -20,6 +20,7 @@ class SubjectScheduleModel extends Model
     'subject_id',
     'teacher_id',
     'subject_hour_id',
+    'rombel_id',
     'day'
   ];
 
@@ -41,5 +42,10 @@ class SubjectScheduleModel extends Model
   public function subjectHour(): BelongsTo
   {
     return $this->belongsTo(SubjectHourModel::class, 'subject_hour_id', 'id');
+  }
+
+  public function rombel()
+  {
+    return $this->belongsTo(Rombel::class, 'rombel_id');
   }
 }

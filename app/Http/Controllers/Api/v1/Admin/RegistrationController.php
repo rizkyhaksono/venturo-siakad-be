@@ -22,7 +22,7 @@ class RegistrationController extends Controller
     $registrations = RegistrationModel::with(['user', 'student', 'teacher'])
       ->where('status', '!=', null)
       ->orderBy('created_at', 'desc')
-      ->get();
+      ->paginate(10);
     if ($registrations->isEmpty()) {
       return response()->failed([
         'status' => 'error',

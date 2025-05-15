@@ -15,12 +15,19 @@ class RombelController extends Controller
    */
   public function index()
   {
-    $rombels = RombelModel::with('class')->get();
+    $rombels = RombelModel::with(
+      'class',
+      'studyYear',
+      'teacher',
+      'subjesubjectSchedulect',
+      'student'
+    )->get();
 
     return response()->json([
       'status' => 'success',
       'message' => 'Rombel list retrieved successfully',
-      'data' => RombelResource::collection($rombels)
+      // 'data' => RombelResource::collection($rombels)
+      'data' => $rombels
     ]);
   }
 
@@ -29,16 +36,19 @@ class RombelController extends Controller
    */
   public function store(RombelRequest $request)
   {
-    $rombel = RombelModel::create($request->validated());
+    $validated = $request->validated();
+
+    $rombel = RombelModel::create($validated);
 
     $class = ClassModel::find($rombel->class_id);
     $class->increment('total_rombel');
     $class->save();
 
-    return response()->success([
+    return response()->json([
       'status' => 'success',
       'message' => 'Rombel created successfully',
-      'data' => new RombelResource($rombel->load('class'))
+      // 'data' => new RombelResource($rombel->load('class', 'studyYear', 'teacher', 'subjectSchedules'))
+      'data' => $rombel
     ], 201);
   }
 
@@ -50,7 +60,8 @@ class RombelController extends Controller
     return response()->json([
       'status' => 'success',
       'message' => 'Rombel retrieved successfully',
-      'data' => new RombelResource($rombel->load('class'))
+      // 'data' => new RombelResource($rombel->load('class', 'studyYear', 'teacher', 'subjectSchedules'))
+      'data' => $rombel
     ]);
   }
 
@@ -64,7 +75,8 @@ class RombelController extends Controller
     return response()->success([
       'status' => 'success',
       'message' => 'Rombel updated successfully',
-      'data' => new RombelResource($rombel->load('class'))
+      // 'data' => new RombelResource($rombel->load('class', 'studyYear', 'teacher', 'subject'))
+      'data' => $rombel
     ]);
   }
 

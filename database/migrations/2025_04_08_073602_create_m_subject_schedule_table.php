@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('m_subject_schedule', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('class_id');
-            $table->uuid('subject_id');
+            $table->uuid('class_id')->nullable();
+            $table->uuid('subject_id')->nullable();
             $table->uuid('teacher_id')->nullable();
-            $table->uuid('subject_hour_id');
+            $table->uuid('subject_hour_id')->nullable();
+            $table->uuid('rombel_id')->nullable();
             $table->string('day')->comment('Monday, Tuesday, Wednesday, Thursday, Friday');
             $table->timestamps();
             $table->softDeletes();
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->foreign('subject_id')->references('id')->on('m_subject')->onDelete('cascade');
             $table->foreign('teacher_id')->references('id')->on('m_teacher')->onDelete('cascade');
             $table->foreign('subject_hour_id')->references('id')->on('m_subject_hour')->onDelete('cascade');
+            $table->foreign('rombel_id')->references('id')->on('m_rombel')->onDelete('cascade');
         });
     }
 
