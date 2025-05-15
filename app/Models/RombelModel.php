@@ -47,6 +47,6 @@ class RombelModel extends Model
 
   public function subjectSchedules()
   {
-    return $this->hasMany(SubjectScheduleModel::class, 'subject_schedule_id', 'id');
+    return $this->belongsTo(SubjectScheduleModel::class, 'subject_schedule_id', 'id');
   }
 }
