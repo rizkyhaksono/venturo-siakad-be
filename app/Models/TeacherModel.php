@@ -42,6 +42,11 @@ class TeacherModel extends Model
     return $this->hasMany(HomeroomTeacherModel::class, 'teacher_id', 'id');
   }
 
+  public function rombels(): HasMany
+  {
+    return $this->hasMany(RombelModel::class, 'teacher_id', 'id');
+  }
+
   public function assignedClassesCount()
   {
     return $this->homeroomTeachers()

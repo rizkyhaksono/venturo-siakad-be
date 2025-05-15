@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\RombelModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TeacherResource extends JsonResource
@@ -14,9 +15,7 @@ class TeacherResource extends JsonResource
       'name' => $this->name,
       'employee_number' => $this->employee_number,
       'subject' => $this->subject,
-      'total_classes' => $this->whenLoaded('homeroomTeachers', function () {
-        return $this->homeroomTeachers->unique('class_id')->count();
-      }, 0),
+      'total_classes' => RombelModel::where('teacher_id', $this->id)->count(),
       'assigned_classes' => $this->whenLoaded('homeroomTeachers', function () {
         return $this->homeroomTeachers->map(function ($homeroom) {
           return [
