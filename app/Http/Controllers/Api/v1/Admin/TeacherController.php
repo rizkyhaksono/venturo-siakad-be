@@ -17,11 +17,14 @@ class TeacherController extends Controller
   public function index()
   {
     try {
-      $teachers = TeacherModel::with(['homeroomTeachers.class', 'rombels'])->latest()->paginate(10);
+      $teachers = TeacherModel::with([
+        'homeroomTeachers.class',
+        'rombels'
+      ])->latest()->paginate(10);
 
       return response()->json([
         'status' => 'success',
-        'data' => $teachers,
+        'data' => TeacherResource::collection($teachers),
       ]);
     } catch (Exception $e) {
       return response()->failed([

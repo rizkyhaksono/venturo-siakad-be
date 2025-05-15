@@ -15,18 +15,8 @@ class TeacherResource extends JsonResource
       'name' => $this->name,
       'employee_number' => $this->employee_number,
       'subject' => $this->subject,
-      'total_classes' => RombelModel::where('teacher_id', $this->id)->count(),
-      'assigned_classes' => $this->whenLoaded('homeroomTeachers', function () {
-        return $this->homeroomTeachers->map(function ($homeroom) {
-          return [
-            'id' => $homeroom->class->id,
-            'name' => $homeroom->class->name,
-            'study_year_id' => $homeroom->class->study_year_id,
-            'total_rombel' => $homeroom->class->total_rombel,
-            'semester' => $homeroom->semester
-          ];
-        })->unique('id')->values();
-      }, []),
+      'total_rombel' => RombelModel::where('teacher_id', $this->id)->count(),
+      'assigned_rombel' => RombelModel::where('teacher_id', $this->id)->get(),
       'created_by' => $this->created_by,
       'updated_by' => $this->updated_by,
       'deleted_by' => $this->deleted_by,
