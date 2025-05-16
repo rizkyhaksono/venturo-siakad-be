@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectScheduleRequest;
 use App\Http\Resources\Admin\SubjectScheduleResource;
 use App\Models\SubjectScheduleModel;
+use App\Models\RombelModel;
 use Exception;
 
 class SubjectScheduleController extends Controller
@@ -54,6 +55,13 @@ class SubjectScheduleController extends Controller
   {
     try {
       $subjectSchedules = SubjectScheduleModel::create($request->validated());
+
+      // Associate the subject schedule with the latest rombel
+      $rombel = RombelModel::latest()->first();
+      if ($rombel) {
+        $subjectSchedules->rombel_id = $rombel->id;
+        $subjectSchedules->save();
+      }
 
       return response()->success([
         'status' => 'success',
