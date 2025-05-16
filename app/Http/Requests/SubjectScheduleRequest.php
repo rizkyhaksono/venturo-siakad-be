@@ -27,6 +27,7 @@ class SubjectScheduleRequest extends FormRequest
       'teacher_id' => ['required', 'uuid', 'exists:m_teacher,id'],
       'subject_hour_id' => ['required', 'uuid', 'exists:m_subject_hour,id'],
       'day' => ['required', 'string', 'in:Monday,Tuesday,Wednesday,Thursday,Friday'],
+      'rombel_id' => ['nullable', 'uuid', 'exists:m_rombel,id'],
     ];
   }
 }

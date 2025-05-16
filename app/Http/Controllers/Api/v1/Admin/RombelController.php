@@ -37,21 +37,6 @@ class RombelController extends Controller
    */
   public function store(RombelRequest $request)
   {
-    // $validated = $request->validated();
-
-    // $rombel = RombelModel::create($validated);
-
-    // $class = ClassModel::find($rombel->class_id);
-    // $class->increment('total_rombel');
-    // $class->save();
-
-    // return response()->json([
-    //   'status' => 'success',
-    //   'message' => 'Rombel created successfully',
-    //   // 'data' => new RombelResource($rombel->load('class', 'studyYear', 'teacher', 'subjectSchedules'))
-    //   'data' => $rombel
-    // ], 201);
-
     $validated = $request->validated();
     $rombel = RombelModel::create($validated);
 
