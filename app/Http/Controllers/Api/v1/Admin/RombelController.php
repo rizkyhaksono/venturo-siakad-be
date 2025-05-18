@@ -103,4 +103,62 @@ class RombelController extends Controller
       'message' => 'Rombel deleted successfully'
     ]);
   }
+
+  /**
+   * Display only the trashed resources.
+   */
+  public function trashed()
+  {
+    $trashedRombels = RombelModel::onlyTrashed()->with(
+      'class',
+      'studyYear',
+      'teacher',
+      'student',
+      'subjectSchedules'
+    )->get();
+
+    return response()->json([
+      'status' => 'success',
+      'message' => 'Trashed rombel list retrieved successfully',
+      // 'data' => RombelResource::collection($trashedRombels)
+      'data' => $trashedRombels
+    ]);
+  }
+
+  /**
+   * Restore the specified resource from storage.
+   */
+  public function restore(string $id)
+  {
+    $rombel = RombelModel::withTrashed()->findOrFail($id);
+    $rombel->restore();
+
+    $class = ClassModel::find($rombel->class_id);
+    $class->increment('total_rombel');
+    $class->save();
+
+    return response()->json([
+      'status' => 'success',
+      'message' => 'Rombel restored successfully',
+      'data' => $rombel
+    ]);
+  }
+
+  /**
+   * Hard delete the specified resource from storage.
+   */
+  public function forceDelete(string $id)
+  {
+    $rombel = RombelModel::withTrashed()->findOrFail($id);
+    $rombel->forceDelete();
+
+    $class = ClassModel::find($rombel->class_id);
+    $class->decrement('total_rombel');
+    $class->save();
+
+    return response()->json([
+      'status' => 'success',
+      'message' => 'Rombel permanently deleted successfully'
+    ]);
+  }
 }

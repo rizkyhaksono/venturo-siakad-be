@@ -23,7 +23,12 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
 
   Route::apiResource('classes', ClassController::class);
   Route::apiResource('class-histories', ClassHistoryController::class);
+
+  Route::get('rombels/trashed', [RombelController::class, 'trashed']);
+  Route::get('rombels/restore/{id}', [RombelController::class, 'restore']);
+  Route::get('rombels/force-delete/{id}', [RombelController::class, 'forceDelete']);
   Route::apiResource('rombels', RombelController::class);
+
   Route::apiResource('homeroom-teachers', HomeroomTeacherController::class);
   Route::apiResource('students', StudentController::class);
   Route::apiResource('study-years', StudyYearController::class);
