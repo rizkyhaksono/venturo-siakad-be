@@ -24,11 +24,7 @@ class SubjectController extends Controller
         ], 403);
       }
 
-      $teacherId = $user->teacher->id;
-
-      $subjects = SubjectModel::with(['studyYear'])
-        ->where('teacher_id', $teacherId)
-        ->paginate(10);
+      $subjects = SubjectModel::paginate(10);
 
       return response()->json([
         'status' => 'success',
