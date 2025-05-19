@@ -13,8 +13,8 @@ class RombelModel extends Model
 
   protected $table = 'm_rombel';
   protected $primaryKey = 'id';
-  protected $keyType = 'string';
   public $incrementing = false;
+  protected $keyType = 'string';
 
   protected $fillable = [
     'name',

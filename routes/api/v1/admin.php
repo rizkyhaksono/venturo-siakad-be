@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\v1\Admin\{
   TeacherController,
   UserController,
   UserRoleController,
+  KKMController,
+  StudentAssesmentController,
 };
 
 Route::middleware(['auth.api', 'role:admin'])->group(function () {
@@ -41,4 +43,11 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::apiResource('teachers', TeacherController::class);
   Route::apiResource('users', UserController::class);
   Route::apiResource('roles', UserRoleController::class);
+
+  Route::get('kkm/trashed', [KKMController::class, 'trashed']);
+  Route::get('kkm/restore/{id}', [KKMController::class, 'restore']);
+  Route::get('kkm/force-delete/{id}', [KKMController::class, 'forceDelete']);
+  Route::apiResource('kkm', KKMController::class);
+
+  Route::apiResource('student-assesments', StudentAssesmentController::class);
 });
