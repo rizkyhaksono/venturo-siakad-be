@@ -27,8 +27,7 @@ class RombelController extends Controller
     return response()->json([
       'status' => 'success',
       'message' => 'Rombel list retrieved successfully',
-      // 'data' => RombelResource::collection($rombels)
-      'data' => $rombels
+      'data' => RombelResource::collection($rombels)
     ]);
   }
 

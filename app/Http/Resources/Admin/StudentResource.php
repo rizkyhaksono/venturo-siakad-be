@@ -27,6 +27,11 @@ class StudentResource extends JsonResource
         'email' => $this->user->email,
         'phone_number' => $this->user->phone_number,
         'photo' => $this->user->photo,
+        'wali' => $this->user->wali,
+        'pekerjaan' => $this->user->pekerjaan,
+        'birth_date' => $this->user->birth_date,
+        'address' => $this->user->address,
+        'gender' => $this->user->gender,
       ],
     ];
   }
