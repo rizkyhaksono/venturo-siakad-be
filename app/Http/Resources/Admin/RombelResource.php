@@ -28,6 +28,12 @@ class RombelResource extends JsonResource
         'name' => $this->teacher->name,
         'employee_number' => $this->teacher->employee_number,
       ],
+      'student' => [
+        'id' => $this->student->id,
+        'name' => $this->student->name,
+        'student_number' => $this->student->student_number,
+        'status' => $this->student->status,
+      ],
       'subject_schedules' => $this->subjectSchedules ? $this->subjectSchedules->map(function ($schedule) {
         return [
           'id' => $schedule->id,
