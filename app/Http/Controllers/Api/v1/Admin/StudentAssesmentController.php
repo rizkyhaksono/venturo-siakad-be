@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\KKMRequest;
-use App\Models\KKMModel;
+use App\Http\Requests\StudentAssesmentRequest;
+use App\Models\StudentAssesmentModel;
 
 class StudentAssesmentController extends Controller
 {
@@ -13,33 +13,25 @@ class StudentAssesmentController extends Controller
    */
   public function index()
   {
-    $studentAssesments = KKMModel::with([
+    $studentAssesments = StudentAssesmentModel::with([
       'student',
       'subject',
       'studyYear'
     ])->paginate(10);
 
-    return response()->json([
-      'status' => true,
-      'message' => 'List of Student Assesments',
-      'data' => $studentAssesments
-    ]);
+    return response()->json($studentAssesments);
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(KKMRequest $request)
+  public function store(StudentAssesmentRequest $request)
   {
     $validatedData = $request->validated();
 
-    $studentAssesment = KKMModel::create($validatedData);
+    $studentAssesment = StudentAssesmentModel::create($validatedData);
 
-    return response()->json([
-      'status' => true,
-      'message' => 'Student Assesment created successfully',
-      'data' => $studentAssesment
-    ]);
+    return response()->json($studentAssesment, 201);
   }
 
   /**
@@ -47,7 +39,7 @@ class StudentAssesmentController extends Controller
    */
   public function show($id)
   {
-    $studentAssesment = KKMModel::with([
+    $studentAssesment = StudentAssesmentModel::with([
       'student',
       'subject',
       'studyYear'
@@ -60,21 +52,16 @@ class StudentAssesmentController extends Controller
       ], 404);
     }
 
-    return response()->json([
-      'status' => true,
-      'message' => 'Student Assesment details',
-      'data' => $studentAssesment
-    ]);
+    return response()->json($studentAssesment);
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(KKMRequest $request, $id)
+  public function update(StudentAssesmentRequest $request, $id)
   {
     $validatedData = $request->validated();
-
-    $studentAssesment = KKMModel::find($id);
+    $studentAssesment = StudentAssesmentModel::find($id);
 
     if (!$studentAssesment) {
       return response()->json([
@@ -85,11 +72,7 @@ class StudentAssesmentController extends Controller
 
     $studentAssesment->update($validatedData);
 
-    return response()->json([
-      'status' => true,
-      'message' => 'Student Assesment updated successfully',
-      'data' => $studentAssesment
-    ]);
+    return response()->json($studentAssesment);
   }
 
   /**
@@ -97,7 +80,7 @@ class StudentAssesmentController extends Controller
    */
   public function destroy($id)
   {
-    $studentAssesment = KKMModel::find($id);
+    $studentAssesment = StudentAssesmentModel::find($id);
 
     if (!$studentAssesment) {
       return response()->json([

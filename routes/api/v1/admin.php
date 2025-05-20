@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\v1\Admin\{
   UserRoleController,
   KKMController,
   StudentAssesmentController,
+  SPPController,
+  SPPHistoryController,
 };
 
 Route::middleware(['auth.api', 'role:admin'])->group(function () {
@@ -50,4 +52,6 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::apiResource('kkm', KKMController::class);
 
   Route::apiResource('student-assesments', StudentAssesmentController::class);
+  Route::apiResource('spp', SPPController::class);
+  Route::apiResource('spp-history', SPPHistoryController::class);
 });

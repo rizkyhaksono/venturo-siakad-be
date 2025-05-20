@@ -16,5 +16,18 @@ class SPPModel  extends Model
   public $incrementing = false;
   protected $keyType = 'string';
 
-  
+  protected $fillable = [
+    'name',
+    'jenis_biaya',
+    'study_year_id',
+    'total',
+    'created_by',
+    'updated_by',
+    'deleted_by',
+  ];
+
+  public function studyYear(): BelongsTo
+  {
+    return $this->belongsTo(StudyYearModel::class, 'study_year_id', 'id');
+  }
 }

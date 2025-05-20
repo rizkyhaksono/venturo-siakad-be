@@ -12,7 +12,7 @@ class StudentAssesmentModel extends Model
 {
   use HasUuids, SoftDeletes;
 
-  protected $table = 'm_student_assesment';
+  protected $table = 'm_student_assesments';
   protected $primaryKey = 'id';
   public $incrementing = false;
   protected $keyType = 'string';

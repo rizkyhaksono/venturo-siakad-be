@@ -22,15 +22,15 @@ class StudentAssesmentRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'student_id' => ['required', 'string'],
-      'subject_id' => ['required', 'string'],
+      'student_id' => ['required', 'uuid', 'exists:m_student,id'],
+      'subject_id' => ['required', 'uuid', 'exists:m_subject,id'],
       'uts_score' => ['nullable', 'numeric'],
       'uas_score' => ['nullable', 'numeric'],
       'tugas_score' => ['nullable', 'numeric'],
       'activity_score' => ['nullable', 'numeric'],
       'total_score' => ['nullable', 'numeric'],
       'notes' => ['nullable', 'string'],
-      'study_year_id' => ['required', 'string'],
+      'study_year_id' => ['required', 'uuid', 'exists:m_study_year,id'],
     ];
   }
 
@@ -41,9 +41,11 @@ class StudentAssesmentRequest extends FormRequest
   {
     return [
       'student_id.required' => 'The student ID is required.',
-      'student_id.string' => 'The student ID must be a string.',
+      'student_id.uuid' => 'The student ID must be a valid UUID.',
+      'student_id.exists' => 'The selected student ID is invalid.',
       'subject_id.required' => 'The subject ID is required.',
-      'subject_id.string' => 'The subject ID must be a string.',
+      'subject_id.uuid' => 'The subject ID must be a valid UUID.',
+      'subject_id.exists' => 'The selected subject ID is invalid.',
       'uts_score.numeric' => 'The UTS score must be a number.',
       'uas_score.numeric' => 'The UAS score must be a number.',
       'tugas_score.numeric' => 'The Tugas score must be a number.',
@@ -51,7 +53,8 @@ class StudentAssesmentRequest extends FormRequest
       'total_score.numeric' => 'The Total score must be a number.',
       'notes.string' => 'The notes must be a string.',
       'study_year_id.required' => 'The study year ID is required.',
-      'study_year_id.string' => 'The study year ID must be a string.',
+      'study_year_id.uuid' => 'The study year ID must be a valid UUID.',
+      'study_year_id.exists' => 'The selected study year ID is invalid.',
     ];
   }
 }
