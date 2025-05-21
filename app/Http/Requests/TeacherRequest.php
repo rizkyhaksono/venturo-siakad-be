@@ -22,7 +22,7 @@ class TeacherRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'user_id' => ['required', 'uuid', 'exists:m_users,id'],
+      'user_id' => ['required', 'uuid', 'exists:m_user,id'],
       'name' => ['required', 'string', 'max:255'],
       'employee_number' => ['required', 'string', 'max:255', 'unique:m_teachers,employee_number'],
       'subject' => ['required', 'string', 'max:255'],

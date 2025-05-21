@@ -29,7 +29,6 @@ class SPPHistoryController extends Controller
       ], 500);
     }
   }
-
   /**
    * Store a newly created resource in storage.
    */
@@ -38,6 +37,10 @@ class SPPHistoryController extends Controller
     $validatedData = $request->validated();
 
     try {
+      // Get SPP details to set the amount_paid
+      $spp = \App\Models\SPPModel::findOrFail($validatedData['spp_id']);
+      $validatedData['amount_paid'] = $spp->total;
+
       $sppHistory = SPPHistoryModel::create($validatedData);
 
       return response()->json($sppHistory, 201);
@@ -82,6 +85,12 @@ class SPPHistoryController extends Controller
     $validatedData = $request->validated();
 
     try {
+      // Get SPP details to set the amount_paid
+      if (isset($validatedData['spp_id'])) {
+        $spp = \App\Models\SPPModel::findOrFail($validatedData['spp_id']);
+        $validatedData['amount_paid'] = $spp->total;
+      }
+
       $sppHistory = SPPHistoryModel::findOrFail($id);
       $sppHistory->update($validatedData);
 

@@ -26,6 +26,15 @@ class SPPHistoryModel  extends Model
     'created_by',
     'updated_by',
     'deleted_by',
-
   ];
+
+  public function user(): BelongsTo
+  {
+    return $this->belongsTo(UserModel::class, 'user_id', 'id');
+  }
+
+  public function spp(): BelongsTo
+  {
+    return $this->belongsTo(SPPModel::class, 'spp_id', 'id');
+  }
 }

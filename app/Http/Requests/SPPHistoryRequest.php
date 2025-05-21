@@ -22,9 +22,8 @@ class SPPHistoryRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'user_id' => ['required', 'uuid', 'exists:m_users,id'],
-      'spp_id' => ['required', 'uuid', 'exists:t_spp,id'],
-      'amount_paid' => ['required', 'numeric'],
+      'user_id' => ['required', 'uuid', 'exists:m_user,id'],
+      'spp_id' => ['required', 'uuid', 'exists:m_spp,id'],
       'payment_date' => ['required', 'date'],
       'payment_status' => ['required', 'string', 'in:paid,unpaid'],
       'payment_method' => ['required', 'string'],
@@ -43,8 +42,6 @@ class SPPHistoryRequest extends FormRequest
       'spp_id.required' => 'The SPP ID is required.',
       'spp_id.uuid' => 'The SPP ID must be a valid UUID.',
       'spp_id.exists' => 'The selected SPP ID is invalid.',
-      'amount_paid.required' => 'The amount paid is required.',
-      'amount_paid.numeric' => 'The amount paid must be a number.',
       'payment_date.required' => 'The payment date is required.',
       'payment_date.date' => 'The payment date must be a valid date.',
       'payment_status.required' => 'The payment status is required.',
