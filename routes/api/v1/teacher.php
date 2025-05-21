@@ -6,7 +6,8 @@ use App\Http\Controllers\Api\v1\Teacher\{
   StudentController,
   SubjectController,
   RombelController,
-  SubjectScheduleController
+  SubjectScheduleController,
+  StudentAssesmentController,
 };
 
 Route::middleware(['auth.api', 'role:teacher|admin'])->group(function () {
@@ -16,4 +17,5 @@ Route::middleware(['auth.api', 'role:teacher|admin'])->group(function () {
   Route::apiResource('rombels', RombelController::class);
   Route::get('rombels/{rombelId}/schedule', [RombelController::class, 'showSchedule']);
   Route::apiResource('subject-schedules', SubjectScheduleController::class);
+  Route::apiResource('student-assessments', StudentAssesmentController::class);
 });
