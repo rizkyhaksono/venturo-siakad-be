@@ -25,7 +25,7 @@ class SPPHistoryRequest extends FormRequest
       'user_id' => ['required', 'uuid', 'exists:m_user,id'],
       'spp_id' => ['required', 'uuid', 'exists:m_spp,id'],
       'payment_date' => ['required', 'date'],
-      'payment_status' => ['required', 'string', 'in:paid,unpaid'],
+      'payment_status' => ['nullable', 'string', 'in:pending,paid,cancelled'],
       'payment_method' => ['required', 'string'],
     ];
   }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\v1\Student\{
   RombelController,
   StudentAssesmentController,
   SPPController,
+  SPPHistoryController,
 };
 
 
@@ -19,4 +20,5 @@ Route::middleware(['auth.api', 'role:student|admin'])->group(function () {
   Route::get('rombels/{rombelId}/schedule', [RombelController::class, 'showSchedule']);
   Route::apiResource('student-assesments', StudentAssesmentController::class);
   Route::apiResource('spp', SPPController::class);
+  Route::apiResource('spp-history', SPPHistoryController::class);
 });
