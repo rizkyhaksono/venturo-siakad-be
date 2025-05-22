@@ -17,6 +17,6 @@ Route::middleware(['auth.api', 'role:student|admin'])->group(function () {
   Route::apiResource('subject-schedules', SubjectScheduleController::class);
   Route::apiResource('rombels', RombelController::class);
   Route::get('rombels/{rombelId}/schedule', [RombelController::class, 'showSchedule']);
-  Route::apiResource('student-assessments', StudentAssesmentController::class);
+  Route::apiResource('student-assesments', StudentAssesmentController::class);
   Route::apiResource('spp', SPPController::class);
 });
