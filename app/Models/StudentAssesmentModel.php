@@ -19,7 +19,7 @@ class StudentAssesmentModel extends Model
 
   protected $fillable = [
     'student_id',
-    'subject_id',
+    'subject_schedule_id',
     'uts_score',
     'uas_score',
     'tugas_score',
@@ -34,9 +34,9 @@ class StudentAssesmentModel extends Model
     return $this->belongsTo(StudentModel::class, 'student_id', 'id');
   }
 
-  public function subject(): BelongsTo
+  public function subjectSchedule(): BelongsTo
   {
-    return $this->belongsTo(SubjectModel::class, 'subject_id', 'id');
+    return $this->belongsTo(SubjectScheduleModel::class, 'subject_schedule_id', 'id');
   }
 
   public function studyYear(): BelongsTo

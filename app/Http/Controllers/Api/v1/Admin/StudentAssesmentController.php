@@ -15,7 +15,7 @@ class StudentAssesmentController extends Controller
   {
     $studentAssesments = StudentAssesmentModel::with([
       'student',
-      'subject',
+      'subjectSchedule',
       'studyYear',
       'teacher'
     ])->paginate(10);

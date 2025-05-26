@@ -23,7 +23,7 @@ class StudentAssesmentRequest extends FormRequest
   {
     return [
       'student_id' => ['required', 'uuid', 'exists:m_student,id'],
-      'subject_id' => ['required', 'uuid', 'exists:m_subject,id'],
+      'subject_schedule_id' => ['required', 'uuid', 'exists:m_subject_schedule,id'],
       'uts_score' => ['nullable', 'numeric'],
       'uas_score' => ['nullable', 'numeric'],
       'tugas_score' => ['nullable', 'numeric'],
@@ -43,9 +43,9 @@ class StudentAssesmentRequest extends FormRequest
       'student_id.required' => 'The student ID is required.',
       'student_id.uuid' => 'The student ID must be a valid UUID.',
       'student_id.exists' => 'The selected student ID is invalid.',
-      'subject_id.required' => 'The subject ID is required.',
-      'subject_id.uuid' => 'The subject ID must be a valid UUID.',
-      'subject_id.exists' => 'The selected subject ID is invalid.',
+      'subject_schedule_id.required' => 'The subject schedule ID is required.',
+      'subject_schedule_id.uuid' => 'The subject schedule ID must be a valid UUID.',
+      'subject_schedule_id.exists' => 'The selected subject schedule ID is invalid.',
       'uts_score.numeric' => 'The UTS score must be a number.',
       'uas_score.numeric' => 'The UAS score must be a number.',
       'tugas_score.numeric' => 'The Tugas score must be a number.',
