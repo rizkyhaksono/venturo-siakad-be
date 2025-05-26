@@ -97,7 +97,7 @@ class AuthController extends Controller
         ]);
 
         // Set default values to student role
-        $payload['m_user_roles_id'] = "1cc7d690-f284-4082-8e0b-c62269f315b5";
+        $payload['m_user_roles_id'] = "a9c48018-128f-4fdc-b7a8-eef3d22ea5ea";
 
         $user = $this->userHelper->create($payload);
         RegistrationModel::create([
@@ -120,7 +120,20 @@ class AuthController extends Controller
      */
     public function profile()
     {
-        return response()->success(new UserResource(auth()->user()));
+        $user = auth()->user();
+        $userResource = new UserResource($user);
+        $registration = RegistrationModel::where('user_id', $user->id)->first();
+        $registrationStatus = null;
+
+        if ($registration) {
+            $registrationStatus = [
+                'status' => $registration->status,
+                'created_at' => $registration->created_at
+            ];
+        }
+
+        $responseData = array_merge($userResource->toArray(request()), ['registration' => $registrationStatus]);
+        return response()->success($responseData, 'Profile retrieved successfully');
     }
 
     /**

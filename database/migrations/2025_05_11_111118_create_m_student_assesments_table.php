@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('m_student_assesments', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('student_id');
-            $table->uuid('subject_id');
+            $table->uuid('subject_schedule_id');
             $table->decimal('uts_score', 5, 2)->nullable();
             $table->decimal('uas_score', 5, 2)->nullable();
             $table->decimal('tugas_score', 5, 2)->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('student_id')->references('id')->on('m_student')->onDelete('cascade');
-            $table->foreign('subject_id')->references('id')->on('m_subject')->onDelete('cascade');
+            $table->foreign('subject_schedule_id')->references('id')->on('m_subject_schedule')->onDelete('cascade');
             $table->foreign('study_year_id')->references('id')->on('m_study_year')->onDelete('cascade');
         });
     }

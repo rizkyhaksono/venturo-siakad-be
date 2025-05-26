@@ -16,7 +16,8 @@ class StudentAssesmentController extends Controller
     $studentAssesments = StudentAssesmentModel::with([
       'student',
       'subject',
-      'studyYear'
+      'studyYear',
+      'teacher'
     ])->paginate(10);
 
     return response()->json($studentAssesments);
@@ -28,9 +29,7 @@ class StudentAssesmentController extends Controller
   public function store(StudentAssesmentRequest $request)
   {
     $validatedData = $request->validated();
-
     $studentAssesment = StudentAssesmentModel::create($validatedData);
-
     return response()->json($studentAssesment, 201);
   }
 
