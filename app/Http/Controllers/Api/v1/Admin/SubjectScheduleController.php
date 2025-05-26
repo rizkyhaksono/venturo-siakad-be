@@ -25,7 +25,7 @@ class SubjectScheduleController extends Controller
         'Friday' => 5
       ];
 
-      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])
+      $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour', 'rombel'])
         ->get()
         ->sortBy(function ($schedule) use ($dayOrder) {
           $dayValue = $dayOrder[$schedule->day];
@@ -37,6 +37,7 @@ class SubjectScheduleController extends Controller
       return response()->json([
         'status' => 'success',
         'data' => SubjectScheduleResource::collection($subjectSchedules),
+        // 'data' => $subjectSchedules,
       ], 200);
     } catch (Exception $e) {
       return response()->failed([

@@ -32,6 +32,10 @@ class SubjectScheduleResource extends JsonResource
         "start_hour" => $this->subjectHour->start_hour,
         "start_time" => $this->subjectHour->start_time,
         "end_time" => $this->subjectHour->end_time,
+      ],
+      "rombel" => [
+        "name" => $this->rombel->name,
+        "student_name" => $this->rombel->student ? $this->rombel->student->name : null,
       ]
     ];
   }

@@ -46,6 +46,12 @@ class SubjectScheduleModel extends Model
 
   public function rombel()
   {
-    return $this->belongsTo(Rombel::class, 'rombel_id');
+    return $this->belongsTo(RombelModel::class, 'rombel_id');
+  }
+
+  // get student who is in this subject schedule
+  public function students()
+  {
+    return $this->belongsToMany(StudentModel::class, 'm_student_subject_schedule', 'subject_schedule_id', 'student_id');
   }
 }
