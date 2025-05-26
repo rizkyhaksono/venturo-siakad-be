@@ -48,7 +48,10 @@ class AuthController extends Controller
         $registration = RegistrationModel::where('user_id', $user->id)->first();
 
         if ($registration->status == 'rejected') {
-            return response()->failed('Akun anda ditolak, silahkan hubungi admin', 422);
+            return response()->success(
+                array_merge($login['data'], ['role' => $role->name]),
+                'Akun anda telah ditolak, silahkan hubungi admin untuk informasi lebih lanjut'
+            );
         }
 
         if ($registration->status == 'pending') {
