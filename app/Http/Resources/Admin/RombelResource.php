@@ -16,7 +16,6 @@ class RombelResource extends JsonResource
       'class' => [
         'id' => $this->class->id,
         'name' => $this->class->name,
-        'total_rombel' => RombelModel::where('class_id', $this->class->id)->count(),
       ],
       'study_year' => [
         'id' => $this->studyYear->id,

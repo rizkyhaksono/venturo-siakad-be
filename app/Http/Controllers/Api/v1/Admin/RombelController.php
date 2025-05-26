@@ -24,10 +24,30 @@ class RombelController extends Controller
       'subjectSchedules'
     )->get();
 
+    $groupedRombels = [];
+    foreach ($rombels as $rombel) {
+      $rombelData = (new RombelResource($rombel))->resolve();
+      $rombelName = $rombel->name;
+
+      if (!isset($groupedRombels[$rombelName])) {
+        $groupedRombels[$rombelName] = $rombelData;
+        if (isset($rombelData['student'])) {
+          $groupedRombels[$rombelName]['students'] = [$rombelData['student']];
+          unset($groupedRombels[$rombelName]['student']);
+        } else {
+          $groupedRombels[$rombelName]['students'] = [];
+        }
+      } else {
+        if (isset($rombelData['student'])) {
+          $groupedRombels[$rombelName]['students'][] = $rombelData['student'];
+        }
+      }
+    }
+
     return response()->json([
       'status' => 'success',
       'message' => 'Rombel list retrieved successfully',
-      'data' => RombelResource::collection($rombels)
+      'data' => array_values($groupedRombels)
     ]);
   }
 
