@@ -31,7 +31,9 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::get('rombels/trashed', [RombelController::class, 'trashed']);
   Route::get('rombels/restore/{id}', [RombelController::class, 'restore']);
   Route::get('rombels/force-delete/{id}', [RombelController::class, 'forceDelete']);
+
   Route::apiResource('rombels', RombelController::class);
+  Route::get('rombels/student/{classId}', [RombelController::class, 'showStudentsByRombelName']);
 
   Route::apiResource('homeroom-teachers', HomeroomTeacherController::class);
   Route::apiResource('students', StudentController::class);
@@ -52,6 +54,8 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
   Route::apiResource('kkm', KKMController::class);
 
   Route::apiResource('student-assesments', StudentAssesmentController::class);
+  Route::get('student-assesments/rombels', [StudentAssesmentController::class, 'studentAssessmentRombels']);
+
   Route::apiResource('spp', SPPController::class);
   Route::apiResource('spp-history', SPPHistoryController::class);
 });

@@ -92,6 +92,57 @@ class RombelController extends Controller
   }
 
   /**
+   * Show all students in a specific rombel name.
+   */
+  public function showStudentsByRombelName(string $name)
+  {
+    // Get all rombels with the specified name that have students
+    $rombels = RombelModel::where('name', $name)
+      ->with('student', 'class', 'studyYear', 'teacher')
+      ->get();
+
+    if ($rombels->isEmpty()) {
+      return response()->json([
+        'status' => 'error',
+        'message' => "No rombel found with name '$name'",
+        'data' => []
+      ], 404);
+    }
+
+    // Extract all students from the rombels
+    $students = [];
+    $rombelDetails = null;
+
+    foreach ($rombels as $rombel) {
+      $rombelData = (new RombelResource($rombel))->resolve();
+
+      // Set basic rombel details from the first rombel if not already set
+      if (!$rombelDetails) {
+        $rombelDetails = [
+          'name' => $rombel->name,
+          'class' => $rombelData['class'] ?? null,
+          'study_year' => $rombelData['study_year'] ?? null,
+          'teacher' => $rombelData['teacher'] ?? null
+        ];
+      }
+
+      // Add student to the list if available
+      if (isset($rombelData['student'])) {
+        $students[] = $rombelData['student'];
+      }
+    }
+
+    return response()->json([
+      'status' => 'success',
+      'message' => "Students in rombel '$name' retrieved successfully",
+      'data' => [
+        'rombel' => $rombelDetails,
+        'students' => $students
+      ]
+    ]);
+  }
+
+  /**
    * Update the specified resource in storage.
    */
   public function update(RombelRequest $request, RombelModel $rombel)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentAssesmentRequest;
 use App\Models\StudentAssesmentModel;
+use App\Models\RombelModel;
 
 class StudentAssesmentController extends Controller
 {
@@ -21,6 +22,23 @@ class StudentAssesmentController extends Controller
     ])->paginate(10);
 
     return response()->json($studentAssesments);
+  }
+
+  /**
+   * Display rombels that listing students resource
+   */
+  public function studentAssessmentRombels()
+  {
+    $rombels = RombelModel::with(['students'])->get();
+
+    if ($rombels->isEmpty()) {
+      return response()->json([
+        'status' => false,
+        'message' => 'No rombels found',
+      ], 404);
+    }
+
+    return response()->json($rombels);
   }
 
   /**
