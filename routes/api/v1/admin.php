@@ -45,7 +45,10 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
 
   Route::apiResource('subject-schedules', SubjectScheduleController::class);
   Route::apiResource('teachers', TeacherController::class);
+
   Route::apiResource('users', UserController::class);
+  Route::post('users', [UserController::class, 'store'])->middleware('verify.signature');
+
   Route::apiResource('roles', UserRoleController::class);
 
   Route::get('kkm/trashed', [KKMController::class, 'trashed']);

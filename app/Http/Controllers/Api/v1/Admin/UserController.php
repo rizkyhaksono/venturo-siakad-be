@@ -80,7 +80,21 @@ class UserController extends Controller
       return response()->failed($request->validator->errors());
     }
 
-    $payload = $request->only(['email', 'name', 'password', 'photo', 'phone_number', 'm_user_roles_id']);
+    // $payload = $request->only(['email', 'name', 'password', 'photo', 'phone_number', 'm_user_roles_id']);
+    $payload = $request->only([
+      'name',
+      'email',
+      'wali',
+      'pekerjaan',
+      'birth_date',
+      'address',
+      'gender',
+      'password',
+      'photo',
+      'phone_number'
+    ]);
+    $payload['m_user_roles_id'] = "a9c48018-128f-4fdc-b7a8-eef3d22ea5ea";
+
     $user = $this->userHelper->create($payload);
 
     if (! $user['status']) {

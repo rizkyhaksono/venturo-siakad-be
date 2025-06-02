@@ -48,7 +48,7 @@ class RegistrationController extends Controller
   {
     try {
       $request->validate([
-        'status' => 'required|in:accepted,rejected',
+        'status' => 'required|in:accepted,rejected,pending',
         'assigned_to' => 'required|in:student,teacher',
       ]);
 
@@ -62,7 +62,23 @@ class RegistrationController extends Controller
       $registration = RegistrationModel::findOrFail($registrationId);
 
       // Check if the user exists in the respective role table
-      if ($request->status === 'accepted') {
+      if ($request->status === 'pending') {
+        if ($request->assigned_to === 'student') {
+          $exists = StudentModel::where('user_id', $registration->user_id)->exists();
+          if ($exists) {
+            StudentModel::where('user_id', $registration->user_id)->forceDelete();
+            UserModel::where('id', $registration->user_id)
+              ->update(['m_user_roles_id' => 'a9c48018-128f-4fdc-b7a8-eef3d22ea5ea']);
+          }
+        } elseif ($request->assigned_to === 'teacher') {
+          $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
+          if ($exists) {
+            TeacherModel::where('user_id', $registration->user_id)->forceDelete();
+            UserModel::where('id', $registration->user_id)
+              ->update(['m_user_roles_id' => 'a9c48018-128f-4fdc-b7a8-eef3d22ea5ea']);
+          }
+        }
+      } elseif ($request->status === 'accepted') {
         if ($request->assigned_to === 'student') {
           $exists = StudentModel::where('user_id', $registration->user_id)->exists();
           if (!$exists) {
@@ -114,12 +130,12 @@ class RegistrationController extends Controller
         if ($request->assigned_to === 'student') {
           $exists = StudentModel::where('user_id', $registration->user_id)->exists();
           if ($exists) {
-            StudentModel::where('user_id', $registration->user_id)->delete();
+            StudentModel::where('user_id', $registration->user_id)->forceDelete();
           }
         } elseif ($request->assigned_to === 'teacher') {
           $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
           if ($exists) {
-            TeacherModel::where('user_id', $registration->user_id)->delete();
+            TeacherModel::where('user_id', $registration->user_id)->forceDelete();
           }
         }
       }

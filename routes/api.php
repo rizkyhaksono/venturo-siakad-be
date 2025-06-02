@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SiteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SignatureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/auth/profile', [AuthController::class, 'profile'])->middleware(['auth.api']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+    Route::post('/sign-payload', [SignatureController::class, 'sign']);
 
     Route::prefix('admin')->group(function () {
         require __DIR__ . '/api/v1/admin.php';
