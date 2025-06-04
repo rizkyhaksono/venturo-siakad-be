@@ -17,6 +17,7 @@ class SubjectScheduleResource extends JsonResource
       "class" => [
         "name" => $this->class->name,
         "study_year" => [
+          "id" => $this->class->studyYear->id,
           "semester" => $this->class->studyYear->semester,
         ]
       ],
