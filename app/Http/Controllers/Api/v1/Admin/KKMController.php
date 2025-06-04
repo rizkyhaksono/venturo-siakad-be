@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KKMRequest;
 use App\Models\KKMModel;
-use App\Models\SubjectModel;
+use Illuminate\Http\Request;
 use Exception;
 
 class KKMController extends Controller
@@ -13,11 +13,13 @@ class KKMController extends Controller
   /**
    * Display a listing of the resources.
    */
-  public function index()
+  public function index(Request $request)
   {
+    $perPage = $request->input('per_page', 10);
+
     $kkm = KKMModel::with(['subject'])
       ->orderBy('created_at', 'desc')
-      ->paginate(10);
+      ->paginate($perPage);
     return response()->json($kkm);
   }
 
