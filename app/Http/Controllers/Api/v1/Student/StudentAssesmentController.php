@@ -18,7 +18,8 @@ class StudentAssesmentController extends Controller
     $perPage = $request->input('per_page', 10);
 
     $student = StudentModel::where('user_id', auth()->user()->id)->first();
-    $studentAssesments = StudentAssesmentModel::where('student_id', $student->id)
+    $studentAssesments = StudentAssesmentModel::with(['subjectSchedule.subject'])
+      ->where('student_id', $student->id)
       ->paginate($perPage);
 
     return response()->json($studentAssesments);
