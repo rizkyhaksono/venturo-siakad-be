@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentAssesmentRequest;
 use App\Models\StudentAssesmentModel;
+use App\Http\Resources\Teacher\StudentAssessment;
 use Illuminate\Http\Request;
 
 class StudentAssesmentController extends Controller
@@ -18,7 +19,7 @@ class StudentAssesmentController extends Controller
 
     $studentAssesments = StudentAssesmentModel::with([
       'student',
-      'subjectSchedule',
+      'subjectSchedule.subject',
       'studyYear'
     ])->paginate($perPage);
 
