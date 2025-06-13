@@ -70,4 +70,26 @@ class StudentAssesmentController extends Controller
       ], 500);
     }
   }
+
+  /**
+   * Display the specified resource based on student ID.
+   * Get all assessments for a specific student.
+   * @param  int  $studentId
+   * @return \Illuminate\Http\Response
+   */
+  public function show($studentId)
+  {
+    $studentAssessments = StudentAssesmentModel::with([
+      'subjectSchedule.subject',
+      'studyYear'
+    ])->where('student_id', $studentId)->get();
+
+    if ($studentAssessments->isEmpty()) {
+      return response()->json([
+        'message' => 'No assessments found for this student'
+      ], 404);
+    }
+
+    return response()->json($studentAssessments);
+  }
 }
