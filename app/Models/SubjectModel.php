@@ -20,4 +20,9 @@ class SubjectModel extends Model
     'name',
     'created_by'
   ];
+
+  public function kkm(): HasMany
+  {
+    return $this->hasMany(KKMModel::class, 'subject_id', 'id');
+  }
 }

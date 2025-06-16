@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentAssesmentRequest;
 use App\Models\StudentAssesmentModel;
-use App\Http\Resources\Teacher\StudentAssessment;
+use App\Models\KKMModel;
 use Illuminate\Http\Request;
 
 class StudentAssesmentController extends Controller
@@ -80,8 +80,8 @@ class StudentAssesmentController extends Controller
   public function show($studentId)
   {
     $studentAssessments = StudentAssesmentModel::with([
-      'subjectSchedule.subject',
-      'studyYear'
+      'subjectSchedule.subject.kkm',
+      'studyYear',
     ])->where('student_id', $studentId)->get();
 
     if ($studentAssessments->isEmpty()) {
