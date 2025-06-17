@@ -92,4 +92,37 @@ class StudentAssesmentController extends Controller
 
     return response()->json($studentAssessments);
   }
+
+  /**
+   * Update the specified resource in storage.
+   * @param  \App\Http\Requests\StudentAssesmentRequest  $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   * @throws \Illuminate\Validation\ValidationException
+   */
+  public function update(StudentAssesmentRequest $request, $id)
+  {
+    $assessment = StudentAssesmentModel::find($id);
+
+    if (!$assessment) {
+      return response()->json([
+        'message' => 'Assessment not found'
+      ], 404);
+    }
+
+    $validatedData = $request->validated();
+
+    try {
+      $assessment->update($validatedData);
+      return response()->json([
+        'message' => 'Assessment updated successfully',
+        'data' => $assessment
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'message' => 'Failed to update assessment',
+        'error' => $e->getMessage()
+      ], 500);
+    }
+  }
 }
