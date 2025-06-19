@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.api' => JwtMiddleware::class,
             'role' => RoleMiddleware::class,
             'signature' => SignatureMiddleware::class,
+            'signature.verify' => SignatureMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

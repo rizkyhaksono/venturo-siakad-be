@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
     'role' => \App\Http\Middleware\RoleMiddleware::class,
     'verify.signature' => \App\Http\Middleware\VerifySignature::class,
     'signature' => \App\Http\Middleware\SignatureMiddleware::class,
+    'signature.verify' => \App\Http\Middleware\SignatureMiddleware::class,
   ];
 
   protected $middlewareGroups = [
