@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\RegistrationModel;
 use App\Models\StudentModel;
 use App\Models\TeacherModel;
+use App\Models\UserRoleModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -67,15 +68,29 @@ class RegistrationController extends Controller
           $exists = StudentModel::where('user_id', $registration->user_id)->exists();
           if ($exists) {
             StudentModel::where('user_id', $registration->user_id)->forceDelete();
+            $userRole = UserRoleModel::where('name', 'student')->first();
+            if (!$userRole) {
+              return response()->failed([
+                'status' => 'error',
+                'message' => 'User role "student" not found'
+              ], 404);
+            }
             UserModel::where('id', $registration->user_id)
-              ->update(['m_user_roles_id' => 'a9c48018-128f-4fdc-b7a8-eef3d22ea5ea']);
+              ->update(['m_user_roles_id' => $userRole->id]);
           }
         } elseif ($request->assigned_to === 'teacher') {
           $exists = TeacherModel::where('user_id', $registration->user_id)->exists();
           if ($exists) {
             TeacherModel::where('user_id', $registration->user_id)->forceDelete();
+            $userRole = UserRoleModel::where('name', 'teacher')->first();
+            if (!$userRole) {
+              return response()->failed([
+                'status' => 'error',
+                'message' => 'User role "teacher" not found'
+              ], 404);
+            }
             UserModel::where('id', $registration->user_id)
-              ->update(['m_user_roles_id' => 'a9c48018-128f-4fdc-b7a8-eef3d22ea5ea']);
+              ->update(['m_user_roles_id' => $userRole->id]);
           }
         }
       } elseif ($request->status === 'accepted') {
@@ -85,9 +100,16 @@ class RegistrationController extends Controller
             $user = $registration->user;
             $studentNumber = 'STU-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
 
-            // update user role to student
+            // Check if the user role is already set to student
+            $userRole = UserRoleModel::where('name', 'student')->first();
+            if (!$userRole) {
+              return response()->failed([
+                'status' => 'error',
+                'message' => 'User role "student" not found'
+              ], 404);
+            }
             UserModel::where('id', $registration->user_id)
-              ->update(['m_user_roles_id' => 'a9c48018-128f-4fdc-b7a8-eef3d22ea5ea']);
+              ->update(['m_user_roles_id' => $userRole->id]);
 
             StudentModel::create([
               'id' => Uuid::uuid4()->toString(),
@@ -105,9 +127,16 @@ class RegistrationController extends Controller
             $user = $registration->user;
             $employeeNumber = 'TCH-' . date('Y') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
 
-            // update user role to teacher
+            // Check if the user role is already set to teacher
+            $userRole = UserRoleModel::where('name', 'teacher')->first();
+            if (!$userRole) {
+              return response()->failed([
+                'status' => 'error',
+                'message' => 'User role "teacher" not found'
+              ], 404);
+            }
             UserModel::where('id', $registration->user_id)
-              ->update(['m_user_roles_id' => '773e1198-01d8-45ec-acef-36dd2ca6299f']);
+              ->update(['m_user_roles_id' => $userRole->id]);
 
             TeacherModel::create([
               'id' => Uuid::uuid4()->toString(),

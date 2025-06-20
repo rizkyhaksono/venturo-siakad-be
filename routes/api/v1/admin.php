@@ -47,8 +47,6 @@ Route::middleware(['auth.api', 'role:admin', 'signature.verify'])->group(functio
   Route::apiResource('teachers', TeacherController::class);
 
   Route::apiResource('users', UserController::class);
-  Route::post('users', [UserController::class, 'store'])->middleware('verify.signature');
-
   Route::apiResource('roles', UserRoleController::class);
 
   Route::get('kkm/trashed', [KKMController::class, 'trashed']);
@@ -60,5 +58,7 @@ Route::middleware(['auth.api', 'role:admin', 'signature.verify'])->group(functio
   Route::get('student-assesments/rombels', [StudentAssesmentController::class, 'studentAssessmentRombels']);
 
   Route::apiResource('spp', SPPController::class);
+
   Route::apiResource('spp-history', SPPHistoryController::class);
+  Route::get('spp-history/proof-payment/{id}', [SPPHistoryController::class, 'showProofPayment']);
 });

@@ -23,6 +23,7 @@ class SPPHistoryModel  extends Model
     'payment_date',
     'payment_status',
     'payment_method',
+    'proof_payment',
     'created_by',
     'updated_by',
     'deleted_by',

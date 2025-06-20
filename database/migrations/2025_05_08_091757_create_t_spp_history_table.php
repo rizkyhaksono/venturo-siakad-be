@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('payment_date');
             $table->string('payment_status')->comment('pending, paid, cancelled');
             $table->string('payment_method')->nullable();
+            $table->string('proof_payment')->nullable()->comment('URL to the proof of payment file');
             $table->timestamps();
             $table->softDeletes();
             $table->uuid('created_by')->nullable();
