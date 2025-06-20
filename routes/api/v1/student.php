@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\v1\Student\{
 };
 
 
-Route::middleware(['auth.api', 'role:student|admin', 'signature.verify'])->group(function () {
+Route::middleware(['auth.api', 'role:student|admin', 'signature.verify', 'verify.signature'])->group(function () {
   Route::apiResource('classes', ClassController::class);
   Route::apiResource('class-histories', ClassHistoryController::class);
   Route::apiResource('subject-schedules', SubjectScheduleController::class);
