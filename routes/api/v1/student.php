@@ -20,5 +20,7 @@ Route::middleware(['auth.api', 'role:student|admin', 'signature.verify'])->group
   Route::get('rombels/{rombelId}/schedule', [RombelController::class, 'showSchedule']);
   Route::apiResource('student-assesments', StudentAssesmentController::class);
   Route::apiResource('spp', SPPController::class);
+
   Route::apiResource('spp-history', SPPHistoryController::class);
+  Route::get('spp-history/proof-payment/{id}', [SPPHistoryController::class, 'showProofPayment']);
 });

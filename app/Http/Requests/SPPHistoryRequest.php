@@ -27,6 +27,7 @@ class SPPHistoryRequest extends FormRequest
       'payment_date' => ['required', 'date'],
       'payment_status' => ['nullable', 'string', 'in:pending,paid,cancelled'],
       'payment_method' => ['required', 'string'],
+      'proof_payment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
     ];
   }
 
@@ -49,6 +50,9 @@ class SPPHistoryRequest extends FormRequest
       'payment_status.in' => 'The selected payment status is invalid.',
       'payment_method.required' => 'The payment method is required.',
       'payment_method.string' => 'The payment method must be a string.',
+      'proof_payment.file' => 'The proof of payment must be a file.',
+      'proof_payment.mimes' => 'The proof of payment must be a file of type: jpg, jpeg, png, pdf.',
+      'proof_payment.max' => 'The proof of payment may not be greater than 2048 kilobytes.',
     ];
   }
 }

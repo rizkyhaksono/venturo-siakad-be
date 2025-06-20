@@ -44,6 +44,7 @@ class SPPHistoryController extends Controller
       $spp = SPPModel::findOrFail($validatedData['spp_id']);
       $validatedData['amount_paid'] = $spp->total;
       $validatedData['payment_status'] = 'pending';
+      $validatedData['proof_payment'] = $request->file('proof_payment') ? $request->file('proof_payment')->store('proof_payments', 'public') : null;
       $validatedData['user_id'] = auth()->user()->id;
       $validatedData['created_by'] = auth()->user()->id;
 
@@ -54,6 +55,40 @@ class SPPHistoryController extends Controller
       return response()->json([
         'status' => false,
         'message' => 'Failed to create SPP History',
+        'error' => $e->getMessage()
+      ], 500);
+    }
+  }
+
+  /**
+   * Display the image of the proof of payment.
+   */
+  public function showProofPayment($id)
+  {
+    try {
+      $sppHistory = SPPHistoryModel::findOrFail($id);
+
+      if (!$sppHistory->proof_payment) {
+        return response()->json([
+          'status' => false,
+          'message' => 'Proof of payment not found'
+        ], 404);
+      }
+
+      $filePath = storage_path('app/public/' . $sppHistory->proof_payment);
+
+      if (!file_exists($filePath)) {
+        return response()->json([
+          'status' => false,
+          'message' => 'File not found'
+        ], 404);
+      }
+
+      return response()->file($filePath);
+    } catch (Exception $e) {
+      return response()->json([
+        'status' => false,
+        'message' => 'Failed to retrieve proof of payment',
         'error' => $e->getMessage()
       ], 500);
     }
