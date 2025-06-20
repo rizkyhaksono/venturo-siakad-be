@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/profile', [AuthController::class, 'profile'])->middleware(['auth.api']);
+    Route::get('/auth/profile/image', [AuthController::class, 'showProfilePicture'])->middleware(['auth.api']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 

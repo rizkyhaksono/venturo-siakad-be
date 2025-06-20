@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Helpers\User\UserHelper;
 use App\Models\RegistrationModel;
 use App\Models\UserRoleModel;
+use App\Models\UserModel;
 
 class AuthController extends Controller
 {
@@ -99,8 +100,11 @@ class AuthController extends Controller
             'phone_number'
         ]);
 
-        // Set default values to student role
-        $payload['m_user_roles_id'] = "a9c48018-128f-4fdc-b7a8-eef3d22ea5ea";
+        $userRole = UserRoleModel::where('name', 'student')->first();
+        if (!$userRole) {
+            return response()->failed('User role "student" not found', 404);
+        }
+        $payload['m_user_roles_id'] = $userRole->id;
 
         $user = $this->userHelper->create($payload);
         RegistrationModel::create([
@@ -140,7 +144,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Mengambil profile user yang sedang login
+     * Mengeluarkan user yang sedang login
      *
      * @return void
      */
@@ -201,5 +205,32 @@ class AuthController extends Controller
         }
 
         return response()->success([], 'Password has been reset successfully');
+    }
+
+    /**
+     * Display the image of the user's profile picture.
+     */
+    public function showProfilePicture()
+    {
+        $user = auth()->user();
+        $user = UserModel::findOrFail($user->id);
+
+        if (!$user->photo) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Profile picture not found'
+            ], 404);
+        }
+
+        $filePath = storage_path('app/public/' . $user->photo);
+
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'File not found'
+            ], 404);
+        }
+
+        return response()->file($filePath);
     }
 }

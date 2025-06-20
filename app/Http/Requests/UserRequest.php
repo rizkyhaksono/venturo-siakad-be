@@ -47,7 +47,7 @@ class UserRequest extends FormRequest
     {
         return [
             'name' => 'required|max:100',
-            'photo' => 'nullable|file|image',
+            'photo' => 'nullable|file|image|mimes:jpg,jpeg,png|max:1048',
             'email' => 'required|email|unique:m_user',
             'wali' => 'required|max:100',
             'pekerjaan' => 'required|max:100',
@@ -63,11 +63,17 @@ class UserRequest extends FormRequest
     private function updateRules(): array
     {
         return [
-            'name' => 'required|max:100',
-            'photo' => 'nullable|file|image',
-            'email' => 'required|email|unique:m_user,email,' . $this->id,
-            'phone_number' => 'numeric',
-            'm_user_roles_id' => 'required',
+            'name' => 'sometimes|required|max:100',
+            'photo' => 'nullable|file|image|mimes:jpg,jpeg,png|max:2048',
+            'email' => 'sometimes|required|email|unique:m_user,email,' . $this->route('user'),
+            'wali' => 'sometimes|required|max:100',
+            'pekerjaan' => 'sometimes|required|max:100',
+            'birth_date' => 'sometimes|required|date',
+            'address' => 'sometimes|required|max:255',
+            'gender' => 'sometimes|required|in:Laki-laki,Perempuan',
+            'password' => 'nullable|min:6',
+            'phone_number' => 'nullable|numeric',
+            'm_user_roles_id' => 'nullable|string|exists:m_user_roles,id',
         ];
     }
 
