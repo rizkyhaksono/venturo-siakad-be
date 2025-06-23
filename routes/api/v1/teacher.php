@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\v1\Teacher\{
   StudentAssesmentController,
 };
 
-Route::middleware(['auth.api', 'role:teacher|admin', 'signature.verify', 'verify.signature'])->group(function () {
+// Route::middleware(['auth.api', 'role:teacher|admin', 'signature.verify'])->group(function () {
+Route::middleware(['auth.api', 'role:teacher|admin'])->group(function () {
   Route::apiResource('classes', ClassController::class);
   Route::apiResource('students', StudentController::class);
   Route::apiResource('subjects', SubjectController::class);

@@ -5,8 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Helpers\SignatureHelper;
+use Illuminate\Support\Facades\Cache;
 
-class SignatureMiddleware
+class VerifySignature
 {
   public function handle(Request $request, Closure $next)
   {

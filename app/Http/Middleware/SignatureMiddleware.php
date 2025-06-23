@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Helpers\SignatureHelper;
 
 class SignatureMiddleware
 {
@@ -29,6 +31,40 @@ class SignatureMiddleware
     //     return $next($request);
     // }
 
+    // public function handle(Request $request, Closure $next)
+    // {
+    //     if (in_array($request->method(), ['POST', 'PUT', 'DELETE'])) {
+    //         $signature = $request->header('signature');
+
+    //         if (!$signature) {
+    //             return response()->json(['error' => 'Signature not provided'], 403);
+    //         }
+
+    //         if ($signature === env('SIGNATURE_BYPASS')) {
+    //             return $next($request);
+    //         }
+
+    //         $data = $request->method() === 'DELETE'
+    //             ? json_encode(['id' => last(explode('/', $request->path()))])
+    //             : $request->getContent();
+
+    //         $publicKey = file_get_contents(base_path('public.pem'));
+
+    //         $verified = openssl_verify(
+    //             $data,
+    //             base64_decode($signature),
+    //             $publicKey,
+    //             OPENSSL_ALGO_SHA256
+    //         );
+
+    //         if ($verified !== 1) {
+    //             return response()->json(['error' => 'Signature mismatch'], 403);
+    //         }
+    //     }
+
+    //     return $next($request);
+    // }
+
     public function handle(Request $request, Closure $next)
     {
         if (in_array($request->method(), ['POST', 'PUT', 'DELETE'])) {
@@ -46,7 +82,7 @@ class SignatureMiddleware
                 ? json_encode(['id' => last(explode('/', $request->path()))])
                 : $request->getContent();
 
-            $publicKey = file_get_contents(base_path('public.pem'));
+            $publicKey = file_get_contents(storage_path('keys/public.pem'));
 
             $verified = openssl_verify(
                 $data,

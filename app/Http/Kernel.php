@@ -17,7 +17,7 @@ class Kernel extends HttpKernel
     'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
     'registration.status' => \App\Http\Middleware\CheckRegistrationStatus::class,
     'role' => \App\Http\Middleware\RoleMiddleware::class,
-    'verify.signature' => \App\Http\Middleware\SignatureMiddleware::class,
+    'verify.signature' => \App\Http\Middleware\VerifySignature::class,
     'signature' => \App\Http\Middleware\SignatureMiddleware::class,
     'signature.verify' => \App\Http\Middleware\SignatureMiddleware::class,
   ];

@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\v1\Admin\{
   SPPHistoryController,
 };
 
+// Route::middleware(['auth.api', 'role:admin', 'signature.verify', 'verify.signature'])->group(function () {
 Route::middleware(['auth.api', 'role:admin', 'signature.verify', 'verify.signature'])->group(function () {
   Route::get('registrations', [RegistrationController::class, 'index']);
   Route::put('registration/{id}', [RegistrationController::class, 'updateRegistrationStatus']);
