@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\User\AuthHelper;
+use App\Helpers\User\UserHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
-use App\Helpers\User\UserHelper;
 use App\Models\RegistrationModel;
 use App\Models\UserRoleModel;
 use App\Models\UserModel;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -171,7 +172,7 @@ class AuthController extends Controller
             return response()->failed($request->validator->errors(), 422);
         }
 
-        $response = AuthHelper::forgotPassword($request->email);
+        $response = AuthHelper::forgotPassword($request->input('email'));
 
         if (!$response['status']) {
             return response()->failed($response['error'], 422);
@@ -195,9 +196,9 @@ class AuthController extends Controller
         }
 
         $response = AuthHelper::resetPassword(
-            $request->token,
-            $request->email,
-            $request->password
+            $request->input('token'),
+            $request->input('email'),
+            $request->input('password')
         );
 
         if (!$response['status']) {
