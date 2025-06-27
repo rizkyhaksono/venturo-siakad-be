@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Teacher\SubjectScheduleResource;
 use App\Models\SubjectScheduleModel;
+use Illuminate\Http\Request;
 use Exception;
 
 class SubjectScheduleController extends Controller
@@ -15,7 +16,7 @@ class SubjectScheduleController extends Controller
    * This method retrieves the subject schedules for the authenticated teacher,
    * relations with teacher, homeroom teacher, and subject hour are included.
    */
-  public function index()
+  public function index(Request $request)
   {
     try {
       $user = auth()->user();
@@ -28,10 +29,11 @@ class SubjectScheduleController extends Controller
       }
 
       $teacherId = $user->teacher->id;
+      $perPage = $request->input('per_page', 10);
 
       $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour'])
         ->where('teacher_id', $teacherId)
-        ->paginate(10);
+        ->paginate($perPage);
 
       return response()->json([
         'status' => 'success',

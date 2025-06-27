@@ -5,6 +5,9 @@ namespace  App\Http\Controllers\Api\v1\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Teacher\SubjectResource;
 use App\Models\SubjectModel;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 
 class SubjectController extends Controller
 {
@@ -12,7 +15,7 @@ class SubjectController extends Controller
    * This method is used to retrieve the list of subjects for the authenticated teacher.
    * It includes the subject name who teaches the subject, and the number of students in each class.
    */
-  public function index()
+  public function index(Request $request)
   {
     try {
       $user = auth()->user();
@@ -24,7 +27,8 @@ class SubjectController extends Controller
         ], 403);
       }
 
-      $subjects = SubjectModel::paginate(10);
+      $perPage = $request->input('per_page', 10);
+      $subjects = SubjectModel::paginate($perPage);
 
       return response()->json([
         'status' => 'success',
