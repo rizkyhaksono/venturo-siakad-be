@@ -183,11 +183,10 @@ class AuthController extends Controller
 
     /**
      * Reset password
-     * 
+     *
      * @bodyParam token string required The reset token received in email. Example: 1234abcd
      * @bodyParam email string required The email address of the user. Example: user@example.com
      * @bodyParam password string required The new password. Example: newpassword123
-     * @bodyParam password_confirmation string required Password confirmation. Example: newpassword123
      */
     public function resetPassword(Request $request)
     {
