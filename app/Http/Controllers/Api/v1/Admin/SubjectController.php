@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SubjectRequest;
 use App\Http\Resources\Admin\SubjectResource;
 use App\Models\SubjectModel;
+use Illuminate\Http\Request;
 use Exception;
 
 class SubjectController extends Controller
@@ -13,10 +14,11 @@ class SubjectController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
     try {
-      $subjects = SubjectModel::paginate(10);
+      $perPage = $request->input('per_page', 10);
+      $subjects = SubjectModel::paginate($perPage);
 
       return response()->json([
         'status' => 'success',

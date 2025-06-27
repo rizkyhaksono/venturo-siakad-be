@@ -7,6 +7,7 @@ use App\Http\Requests\SubjectScheduleRequest;
 use App\Http\Resources\Admin\SubjectScheduleResource;
 use App\Models\SubjectScheduleModel;
 use App\Models\RombelModel;
+use Illuminate\Http\Request;
 use Exception;
 
 class SubjectScheduleController extends Controller
@@ -14,7 +15,7 @@ class SubjectScheduleController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
     try {
       $dayOrder = [
@@ -25,6 +26,7 @@ class SubjectScheduleController extends Controller
         'Friday' => 5
       ];
 
+      $perPage = $request->input('per_page', 10);
       $subjectSchedules = SubjectScheduleModel::with(['class', 'subject', 'teacher', 'subjectHour', 'rombel'])
         ->get()
         ->sortBy(function ($schedule) use ($dayOrder) {
@@ -34,10 +36,21 @@ class SubjectScheduleController extends Controller
         })
         ->values();
 
+      $currentPage = $request->input('page', 1);
+      $offset = ($currentPage - 1) * $perPage;
+      $paginatedSchedules = $subjectSchedules->slice($offset, $perPage);
+      $total = $subjectSchedules->count();
+      $lastPage = ceil($total / $perPage);
+
       return response()->json([
         'status' => 'success',
-        'data' => SubjectScheduleResource::collection($subjectSchedules),
-        // 'data' => $subjectSchedules,
+        'data' => SubjectScheduleResource::collection($paginatedSchedules),
+        'meta' => [
+          'current_page' => (int) $currentPage,
+          'last_page' => $lastPage,
+          'per_page' => (int) $perPage,
+          'total' => $total,
+        ],
       ], 200);
     } catch (Exception $e) {
       return response()->failed([
