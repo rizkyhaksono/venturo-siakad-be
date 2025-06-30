@@ -57,6 +57,7 @@ Route::middleware(['auth.api', 'role:admin'])->group(function () {
 
   Route::apiResource('student-assesments', StudentAssesmentController::class);
   Route::get('student-assesments/rombels', [StudentAssesmentController::class, 'studentAssessmentRombels']);
+  Route::get('student-assesments/{studentId}/{studyYearId}', [StudentAssesmentController::class, 'studentAssessmentByStudentIdAndStudyYearId']);
 
   Route::apiResource('spp', SPPController::class);
 

@@ -42,6 +42,30 @@ class StudentAssesmentController extends Controller
   }
 
   /**
+   * Display grade by student id and study year id
+   */
+  public function studentAssessmentByStudentIdAndStudyYearId($studentId, $studyYearId)
+  {
+    $studentAssesments = StudentAssesmentModel::where('student_id', $studentId)
+      ->where('study_year_id', $studyYearId)
+      ->with([
+        'student',
+        'subjectSchedule.subject',
+        'studyYear'
+      ])
+      ->get();
+
+    if ($studentAssesments->isEmpty()) {
+      return response()->json([
+        'status' => false,
+        'message' => 'No assessments found for this student',
+      ], 404);
+    }
+
+    return response()->json($studentAssesments);
+  }
+
+  /**
    * Store a newly created resource in storage.
    */
   public function store(StudentAssesmentRequest $request)
