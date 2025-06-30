@@ -43,4 +43,9 @@ class StudentAssesmentModel extends Model
   {
     return $this->belongsTo(StudyYearModel::class, 'study_year_id', 'id');
   }
+
+  public function teacher(): BelongsTo
+  {
+    return $this->belongsTo(TeacherModel::class, 'teacher_id', 'id');
+  }
 }
