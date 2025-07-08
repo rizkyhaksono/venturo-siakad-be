@@ -1,8 +1,6 @@
+# Siakad Backend Laravel 11
 
-# Laravel
-
-Description project
-
+Sistem Akademik (SIAKAD) Backend adalah sebuah sistem yang dibangun menggunakan framework Laravel 11 untuk mengelola data akademik di institusi pendidikan. Sistem ini menyediakan berbagai fitur untuk memudahkan pengelolaan data siswa, guru, mata pelajaran, jadwal, dan nilai.
 
 ## Installation
 
@@ -102,3 +100,14 @@ vendor/bin/pint
 ├── .gitignore : File untuk mendaftarkan folder / file apa saja yang tidak push ke repository
 └── composer.json : File untuk menyimpan daftar library apa saja yang digunakan
 ```
+
+## Testing
+
+Untuk menjalankan unit, dan feature testing, cukup menjalankan perintah berikut:
+```php
+php artisan test
+```
+
+Hasil testing akan terlihat seperti berikut:
+
+<img src="public/example-testing.png" />
