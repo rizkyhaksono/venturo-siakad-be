@@ -24,12 +24,12 @@ return [
         /*
          * API version.
          */
-        'version' => env('API_VERSION', '1.0.1'),
+        'version' => env('API_VERSION', '1.0.5'),
 
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => '',
+        'description' => 'Venturo SIAKAD Backend API Documentation provides a comprehensive overview of the API endpoints available for the Venturo SIAKAD system. This documentation is designed to assist developers in integrating with the SIAKAD backend, offering detailed information on request and response formats, authentication methods, and available resources. The Production Web is here https://venturo.siakad.fe.natee.my.id',
     ],
 
     /*
@@ -39,7 +39,7 @@ return [
         /*
          * Define the title of the documentation's website. App name is used when this config is `null`.
          */
-        'title' => null,
+        'title' => "Venturo SIAKAD Backend API Documentation",
 
         /*
          * Define the theme of the documentation. Available options are `light` and `dark`.
@@ -59,7 +59,7 @@ return [
         /*
          * URL to an image that displays as a small square logo next to the title, above the table of contents.
          */
-        'logo' => '',
+        'logo' => 'https://natee.my.id/favicon.ico',
 
         /*
          * Use to fetch the credential policy for the Try It feature. Options are: omit, include (default), and same-origin
@@ -91,7 +91,6 @@ return [
      */
     'servers' => [
         'Local' => 'api',
-        'Dev' => 'https://venturo.siakad.be.natee.my.id/api',
         'Prod' => 'https://venturo.siakad.be.natee.my.id/api',
     ],
 

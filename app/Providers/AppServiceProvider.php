@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
                     SecurityScheme::http('bearer')
                 );
             });
+
+        Gate::define('viewScalar', function (?User $user) {
+            return $user && $user->hasPermission('view-scalar');
+        });
 
         Response::macro('success', function ($data = [], $message = '', $settings = []) {
             return Response::make([
