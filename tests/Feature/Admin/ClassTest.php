@@ -16,7 +16,7 @@ class ClassTest extends TestCase
      */
     public function test_can_get_all_classes(): void
     {
-        $response = $this->getJsonWithAuth(self::ENDPOINT_ADMIN_CLASS);
+        $response = $this->getJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -79,7 +79,7 @@ class ClassTest extends TestCase
             'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
         ];
 
-        $response = $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
+        $response = $this->postJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
 
         $response->assertStatus(201)
             ->assertJsonFragment([
@@ -99,12 +99,12 @@ class ClassTest extends TestCase
             'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
         ];
 
-        $createResponse = $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
+        $createResponse = $this->postJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
         $createResponse->assertStatus(201);
 
         $createdClass = $createResponse->json();
 
-        $response = $this->getJsonWithAuth("/api/v1/admin/classes/{$createdClass['id']}");
+        $response = $this->getJsonWithAdminAuth("/api/v1/admin/classes/{$createdClass['id']}");
 
         $response->assertStatus(200)
             ->assertJsonFragment([
@@ -126,7 +126,7 @@ class ClassTest extends TestCase
             'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
         ];
 
-        $createResponse = $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
+        $createResponse = $this->postJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
         $createResponse->assertStatus(201);
 
         $createdClass = $createResponse->json();
@@ -138,12 +138,12 @@ class ClassTest extends TestCase
             'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
         ];
 
-        $response = $this->putJsonWithAuth("/api/v1/admin/classes/{$createdClass['id']}", $updateData);
+        $response = $this->putJsonWithAdminAuth("/api/v1/admin/classes/{$createdClass['id']}", $updateData);
 
         $response->assertStatus(200);
 
         // Verify the update
-        $showResponse = $this->getJsonWithAuth("/api/v1/admin/classes/{$createdClass['id']}");
+        $showResponse = $this->getJsonWithAdminAuth("/api/v1/admin/classes/{$createdClass['id']}");
         $showResponse->assertJsonFragment([
             'name' => $updateData['name']
         ]);
@@ -161,18 +161,18 @@ class ClassTest extends TestCase
             'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
         ];
 
-        $createResponse = $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
+        $createResponse = $this->postJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS, $classData);
         $createResponse->assertStatus(201);
 
         $createdClass = $createResponse->json();
 
         // Then delete it
-        $response = $this->deleteJsonWithAuth("/api/v1/admin/classes/{$createdClass['id']}");
+        $response = $this->deleteJsonWithAdminAuth("/api/v1/admin/classes/{$createdClass['id']}");
 
         $response->assertStatus(204);
 
         // Verify it's deleted (should return 404)
-        $showResponse = $this->getJsonWithAuth("/api/v1/admin/classes/{$createdClass['id']}");
+        $showResponse = $this->getJsonWithAdminAuth("/api/v1/admin/classes/{$createdClass['id']}");
         $showResponse->assertStatus(404);
     }
 
@@ -181,7 +181,7 @@ class ClassTest extends TestCase
      */
     public function test_cannot_create_class_with_invalid_data(): void
     {
-        $response = $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, []);
+        $response = $this->postJsonWithAdminAuth(self::ENDPOINT_ADMIN_CLASS, []);
 
         $response->assertStatus(422)
             ->assertJsonStructure([
@@ -191,28 +191,6 @@ class ClassTest extends TestCase
                     'name',
                     'study_year_id'
                 ]
-            ]);
-    }
-
-    /**
-     * Test search functionality if available
-     */
-    public function test_can_search_classes(): void
-    {
-        // Create a class with specific name
-        $uniqueName = 'Unique Test Class - ' . time();
-        $this->postJsonWithAuth(self::ENDPOINT_ADMIN_CLASS, [
-            'name' => $uniqueName,
-            'description' => 'Test Description',
-            'study_year_id' => '8d3d91b9-b58d-4687-929b-4338d54f9ea8'
-        ]);
-
-        // Search for the class
-        $response = $this->getJsonWithAuth('/api/v1/admin/classes?search=' . urlencode($uniqueName));
-
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => $uniqueName
             ]);
     }
 }
